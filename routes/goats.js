@@ -1,0 +1,47 @@
+const express = require('express');
+const router = express.Router();
+
+const goats =[
+  {
+    id: 1,
+    name: "T-REX"
+  },
+  {
+    id: 2,
+    name: "Connie"
+  },
+  {
+    id: 3,
+    name: "Clyde"
+  },
+  {
+    id: 4,
+    name: "Insest goat"
+  }
+]
+
+router.get('/', (req, res) => { 
+  res.json(goats);
+})
+
+router.get('/:id', (req, res) => {
+  let selectedGoat = null;
+  goats.forEach((goat) => {
+    if(goat.id == req.params.id){
+      selectedGoat = goat;
+    }
+  })
+  //console.log(req.params.id);
+  res.json(selectedGoat);
+})
+
+router.post('/', (req, res) => { 
+  console.log(req.body);
+  res.send("Added goat");
+})
+
+router.delete('/:id', (req, res) => {
+  console.log("Deleted goat");
+})
+
+module.exports = router;
