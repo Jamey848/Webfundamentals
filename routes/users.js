@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const bcrypt = require('bcrypt');
+
 const {PrismaClient} = require('../generated/prisma');
 const prisma = new PrismaClient();
 
@@ -9,6 +11,7 @@ const prisma = new PrismaClient();
 // return userID
 // where gmail, password
 //
+// To-Do: Check hashed password
 // (OPTIONAL: CREATE TOKEN. JWT)
 // --------------------------------------------
 
@@ -18,8 +21,7 @@ router.get('/', async(req, res) => { //Async = Wacht op antwoord op database
 
   const userexist = await prisma.users.findMany({
     where:{
-      gmail: usersGmail,
-      userpassword: usersPassword
+      gmail: usersGmail
     }
   });
 
@@ -30,11 +32,23 @@ router.get('/', async(req, res) => { //Async = Wacht op antwoord op database
   }
   else if(userexist[0].permission == 3){
     res.json({
-      "status": "access denied"
+      "status": "Invalid permission status"
     });
   }
   else{
-    res.json(userexist);
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = userexist[0].userpassword;
+
+    const passwordMatched = await bcrypt.compare(usersPassword, hashedPassword);
+
+    if(passwordMatched){
+      res.json(userexist);
+    }
+    else{
+      res.json({
+        "status": "Invalid password"
+      });
+    }
   }
 });
 
@@ -43,5 +57,11 @@ router.get('/', async(req, res) => { //Async = Wacht op antwoord op database
 // return userID
 // Gmail notification. Send welcome email
 // --------------------------------------------
+
+router.post('/', async(req, res) => { 
+  const usersName = req.body.UN;
+  const usersGmail = req.body.UG;
+  const usersPassword = req.body.UP;
+});
 
 module.exports = router;
