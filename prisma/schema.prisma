@@ -25,41 +25,40 @@ model product {
 }
 
 model receipt {
-  receiptID    Int            @id @default(autoincrement())
-  productID    Int
-  storeID      Int
-  unitID       Int
-  price        Decimal?       @db.Decimal(10, 2)
-  quantity     Int?
-  quantifier   Int?
-  product      product        @relation(fields: [productID], references: [productID], onDelete: NoAction, onUpdate: NoAction, map: "receipt_ibfk_1")
-  store        store          @relation(fields: [storeID], references: [storeID], onDelete: NoAction, onUpdate: NoAction, map: "receipt_ibfk_2")
-  unit         unit           @relation(fields: [unitID], references: [unitID], onDelete: NoAction, onUpdate: NoAction, map: "receipt_ibfk_3")
-  shoppingnode shoppingnode[]
+  receiptID      Int           @id @default(autoincrement())
+  productID      Int
+  unitID         Int
+  price          Decimal?      @db.Decimal(10, 2)
+  quantity       Int?
+  quantifier     Int?
+  shoppingnodeID Int?
+  product        product       @relation(fields: [productID], references: [productID], onDelete: NoAction, onUpdate: NoAction, map: "receipt_ibfk_1")
+  unit           unit          @relation(fields: [unitID], references: [unitID], onDelete: NoAction, onUpdate: NoAction, map: "receipt_ibfk_3")
+  shoppingnode   shoppingnode? @relation(fields: [shoppingnodeID], references: [shoppingnodeID], onDelete: Cascade, onUpdate: NoAction, map: "receipt_ibfk_fk")
 
   @@index([productID], map: "productID")
-  @@index([storeID], map: "storeID")
   @@index([unitID], map: "unitID")
+  @@index([shoppingnodeID], map: "receipt_ibfk_fk")
 }
 
 model shoppingnode {
   shoppingnodeID   Int       @id @default(autoincrement())
   usersID          Int
-  receiptID        Int
   shoppingnodename String?   @db.VarChar(255)
   shoppingdate     DateTime? @db.Date
   futurepurchase   Boolean?
-  users            users     @relation(fields: [usersID], references: [usersID], onDelete: NoAction, onUpdate: NoAction, map: "shoppingnode_ibfk_1")
-  receipt          receipt   @relation(fields: [receiptID], references: [receiptID], onDelete: NoAction, onUpdate: NoAction, map: "shoppingnode_ibfk_2")
+  storeID          Int
+  receipt          receipt[]
+  store            store     @relation(fields: [storeID], references: [storeID], onDelete: NoAction, onUpdate: NoAction, map: "fk_shoppingnode_store")
 
-  @@index([receiptID], map: "receiptID")
   @@index([usersID], map: "usersID")
+  @@index([storeID], map: "fk_shoppingnode_store")
 }
 
 model store {
-  storeID   Int       @id @default(autoincrement())
-  storename String?   @db.VarChar(255)
-  receipt   receipt[]
+  storeID      Int            @id @default(autoincrement())
+  storename    String?        @db.VarChar(255)
+  shoppingnode shoppingnode[]
 }
 
 model unit {
@@ -69,11 +68,10 @@ model unit {
 }
 
 model users {
-  usersID      Int            @id @default(autoincrement())
-  username     String         @db.VarChar(255)
-  userpassword String         @db.VarChar(255)
-  gmail        String         @db.VarChar(255)
-  budget       Decimal?       @db.Decimal(10, 2)
+  usersID      Int      @id @default(autoincrement())
+  username     String   @db.VarChar(255)
+  userpassword String   @db.VarChar(255)
+  gmail        String   @db.VarChar(255)
+  budget       Decimal? @db.Decimal(10, 2)
   permission   Int
-  shoppingnode shoppingnode[]
 }

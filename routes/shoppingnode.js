@@ -29,9 +29,9 @@ router.get('/', async(req, res) => {
 
   // Find total amount spend (from receipts linked to shoppingnode)
   let totalspend = await prisma.$queryRaw`SELECT SUM(price) FROM receipt as RE
-  INNER JOIN shoppingnode as SN on RE.receiptID = SN.receiptID
-  WHERE SN.shoppingdate BETWEEN ${startdate} AND ${enddate} AND SN.usersID = 3 
-  AND SN.futurepurchase = false`;
+  INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
+  WHERE shoppingdate BETWEEN ${startdate} AND ${enddate} AND
+  SN.usersID = 3 AND SN.futurepurchase = 0;`;
 
   // Count # shopping trips
   let countshoppingtrips = await prisma.$queryRaw`SELECT CAST(COUNT(*) AS CHAR) FROM shoppingnode 
@@ -40,17 +40,17 @@ router.get('/', async(req, res) => {
   
   // res.json({total: Number(countshoppingtrips[0]["COUNT(*)"])}); Yeah because it's a bigint for some reason
   // Most visted store
-  let mostvisitedstore = await prisma.$queryRaw`SELECT RE.storeID, ST.storename, CAST(Count(RE.storeID) AS CHAR) as VisitCount FROM receipt as RE
+  /*let mostvisitedstore = await prisma.$queryRaw`SELECT RE.storeID, ST.storename, CAST(Count(RE.storeID) AS CHAR) as VisitCount FROM receipt as RE
   INNER JOIN shoppingnode as SN on RE.receiptID = SN.receiptID
   INNER JOIN store as ST on RE.storeID = ST.storeID
   WHERE SN.shoppingdate BETWEEN ${startdate} AND ${enddate} 
-  AND SN.usersID = 3 AND SN.futurepurchase = false GROUP BY storeID ORDER BY VisitCount desc LIMIT 1;`;
+  AND SN.usersID = 3 AND SN.futurepurchase = false GROUP BY storeID ORDER BY VisitCount desc LIMIT 1;`;*/
 
   res.json({
     nodes: shoppingnodes,
     total: totalspend,
     count: countshoppingtrips,
-    store: mostvisitedstore
+    //store: mostvisitedstore
   });
 })
 
