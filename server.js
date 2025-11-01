@@ -7,10 +7,12 @@ console.log("API is up and running, YIPEEE");
 const usersRouter = require("./routes/users");
 const shoppingnodeRouter = require("./routes/shoppingnode");
 const receiptRouter = require("./routes/receipt");
+const metricsRouter = require("./routes/metrics");
 
 app.use("/users", usersRouter);
 app.use("/shoppingnode", shoppingnodeRouter);
 app.use("/receipt", receiptRouter);
+app.use("/metrics", metricsRouter);
 
 app.use(express.json());
 

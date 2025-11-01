@@ -17,6 +17,8 @@ const { startOfWeek, startOfMonth, startOfYear, format } = require('date-fns');
 // WHERE datefilter (this week, this month, this year)
 // --------------------------------------------
 
+// IMPORTANT TO-DO: REPLACE usersID WITH ACTUAL ID OF LOGGED IN USER
+
 router.get('/', async(req, res) => {
 
   // Shoppingnode data filtered by date (HOLY CRAP I HATE DATE AND TIME IN JAVASCRIPT)
