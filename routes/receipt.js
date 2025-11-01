@@ -28,15 +28,27 @@ router.get('/:id', async(req, res) => {
   res.json(receiptitems);
 })
 
+router.delete('/:id', async(req, res) =>{
+  let delID = req.params.id;
+
+  let deleteditem = await prisma.receipt.delete({
+    where:{
+      receiptID: parseInt(delID)
+    }
+  });
+
+  res.json(deleteditem);
+})
+
 router.put('/:id', async(req, res) => {
   let reqNodeID = req.params.id;
 
   let reqName = req.body.reqName;
   let reqPrice = req.body.reqPrice;
-  let reqQuantity = req.body.reqQuantifier;
-  let reqUnit = req.body.reqUnit;
+  let reqQuantity = req.body.reqQuantity;
+  let reqUnit = req.body.reqUnit; // Always correct. Dropdown menu
   let reqQuantifier = req.body.reqQuantifier;
-  let reqCategory = req.body.reqCategory;
+  let reqCategory = req.body.reqCategory; // Always correct. Dropdown menu
 
   if(reqName !== undefined && reqCategory !== undefined && reqPrice !== undefined && reqQuantity !== undefined && reqUnit !== undefined && reqQuantifier !== undefined){
     let ct = checktypes(reqName, reqPrice, reqQuantity, reqQuantifier);
@@ -78,14 +90,13 @@ router.put('/:id', async(req, res) => {
       "error": "insufficient data given to insert new product into list"
     });
   }
-
 })
 
 async function productcheck(proName, catName) {
   let productExists = await prisma.$queryRaw`SELECT productID FROM product
     WHERE productname LIKE ${'%' + proName + '%'}`;
 
-  if(productExists === undefined){
+  if(productExists.length === 0){
     let categoryIDResult = await prisma.$queryRaw`SELECT categoryID FROM category
     WHERE categoryname LIKE ${catName};`
 
@@ -98,7 +109,7 @@ async function productcheck(proName, catName) {
       }
     });
 
-    return newProduct[0].productID;
+    return newProduct.productID;
   }
   else if(productExists.length > 0){
     let categoryIDResult = await prisma.$queryRaw`SELECT categoryID FROM category
