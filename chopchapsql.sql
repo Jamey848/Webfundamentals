@@ -69,31 +69,50 @@ WHERE usersID = 1;
 SELECT * FROM users;
 
 INSERT INTO store (storename) VALUES ("Aldi");
-INSERT INTO  unit (unitname) VALUES ("count");
-INSERT INTO category (categoryname) VALUES ("fruit");
+INSERT INTO  unit (unitname) VALUES ("box");
+INSERT INTO category (categoryname) VALUES ("spices & herbs");
 
 INSERT INTO product (productname, categoryID) VALUES(
-"bananas",
-(SELECT categoryID FROM category WHERE categoryname = "fruit")
+"carrots",
+(SELECT categoryID FROM category WHERE categoryname LIKE "vegetables")
 );
 
-INSERT receipt (shoppingnodeID, productID, storeID, unitID, price, quantity, quantifier) VALUES(
-29,
-(SELECT productID FROM product WHERE productname = "bananas"),
-(SELECT storeID FROM store WHERE storename = "Aldi"),
+SELECT * FROM product;
+SELECT * FROM receipt;
+
+INSERT receipt (shoppingnodeID, productID, unitID, price, quantity, quantifier) VALUES(
+51,
+(SELECT productID FROM product WHERE productname LIKE ("%carrot%")),
 (SELECT unitID from unit WHERE unitname = "count"),
-2.99,
+3.99,
 1,
-2
+4
 );
+DELETE FROM shoppingnode;
+
+SELECT * FROM store;
+
+SELECT SUM(RE.price) AS total
+FROM receipt AS RE
+INNER JOIN shoppingnode AS SN ON SN.shoppingnodeID = RE.shoppingnodeID
+WHERE SN.shoppingdate BETWEEN '2025-10-26' AND '2025-10-31'
+AND SN.usersID = 3;
+
+DELETE FROM receipt;
+
+SELECT * FROM shoppingnode
+WHERE shoppingdate BETWEEN '2025-10-26' AND '2025-10-31'
+AND usersID = 3;
+
 
 SELECT * FROM receipt;
 SELECT * FROM shoppingnode;
-
-INSERT INTO shoppingnode (usersID, shoppingnodename, shoppingdate, futurepurchase) VALUES (
+SELECT * FROM store;
+INSERT INTO shoppingnode (usersID, storeID, shoppingnodename, shoppingdate, futurepurchase) VALUES (
 3,
-"Bought some bananas",
-'2025-04-26',
+2,
+"Made some groceries",
+'2025-10-31',
 false
 );
 
@@ -107,11 +126,7 @@ SHOW CREATE TABLE shoppingnode;
 ALTER TABLE shoppingnode DROP FOREIGN KEY shoppingnode_ibfk_2;
 ALTER TABLE shoppingnode DROP COLUMN receiptID;
 
-ALTER TABLE receipt ADD COLUMN shoppingnodeID INT;
-
-UPDATE receipt R
-JOIN shoppingnode as SN ON SN.receiptID = R.receiptID
-SET R.shoppingnodeID = SN.shoppingnodeID;
+ALTER TABLE shoppingnode ADD COLUMN storeID INT NOT NULL;
 
 SELECT RE.receiptID, RE.shoppingnodeID, SN.shoppingnodeID, SN.shoppingdate, SN.usersID
 FROM receipt AS RE
@@ -124,6 +139,9 @@ INNER JOIN shoppingnode AS SN ON SN.shoppingnodeID = RE.shoppingnodeID
 WHERE SN.shoppingdate BETWEEN '2025-10-26' AND '2025-10-31'
 AND SN.usersID = 3;
 
+ALTER TABLE receipt DROP COLUMN storeID;
+ALTER TABLE receipt DROP FOREIGN KEY receipt_ibfk_2;
+
 
 SELECT * FROM shoppingnode;
 
@@ -134,4 +152,28 @@ SELECT * FROM receipt;
 SELECT * FROM shoppingnode;
 
 DELETE FROM shoppingnode;
-DELETE FROM receipt
+DELETE FROM receipt;
+
+SELECT ST.storename, COUNT(ST.storeID) FROM store as ST
+INNER JOIN shoppingnode as SN ON ST.storeID = SN.storeID
+GROUP BY ST.storeID ORDER BY COUNT(ST.storeID) desc LIMIT 1;
+
+SELECT * FROM receipt as RE
+WHERE RE.shoppingnodeID = 50;
+
+SELECT * FROM receipt;
+
+SELECT PR.productname, RE.price, CONCAT(RE.quantifier, ' x ', RE.quantity, UN.unitname) as QUA, CA.categoryname FROM receipt as RE
+INNER JOIN product as PR on RE.productID = PR.productID
+INNER JOIN category as CA on PR.categoryID = CA.categoryID
+INNER JOIN unit as UN on RE.unitID = UN.unitID 
+INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
+WHERE SN.usersID = 3 AND RE.shoppingnodeID = 51;
+
+select * from product;
+select * from category;
+select * from unit;
+
+UPDATE unit 
+SET unitname = "#"
+WHERE unit.unitID = 1;

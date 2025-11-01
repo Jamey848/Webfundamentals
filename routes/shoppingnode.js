@@ -21,28 +21,35 @@ router.get('/', async(req, res) => {
 
   // Shoppingnode data filtered by date (HOLY CRAP I HATE DATE AND TIME IN JAVASCRIPT)
   let timefilter = req.body.filter;
+  let userID = req.body.uID;
+
   let startdate = format(findstartdate(timefilter), "yyyy-MM-dd");
   let enddate = format(new Date(), "yyyy-MM-dd");
   
-  let shoppingnodes = await prisma.$queryRaw`SELECT * FROM shoppingnode WHERE shoppingdate BETWEEN ${startdate} AND ${enddate}
+  let shoppingnodes = await prisma.$queryRaw`SELECT * FROM shoppingnode 
+  WHERE shoppingnode.usersID = 3
+  AND shoppingdate BETWEEN ${startdate} AND ${enddate}
   AND shoppingnode.futurepurchase = 0`;
 
   // Find total amount spend (from receipts linked to shoppingnode)
   let totalspend = await prisma.$queryRaw`SELECT SUM(price) AS totalprice FROM receipt as RE
   INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
-  WHERE shoppingdate BETWEEN ${startdate} AND ${enddate} AND
-  SN.usersID = 3 AND SN.futurepurchase = 0;`;
+  WHERE SN.usersID = 3
+  AND shoppingdate BETWEEN ${startdate} AND ${enddate} 
+  AND SN.futurepurchase = 0;`;
 
   // Count # shopping trips
   let countshoppingtrips = await prisma.$queryRaw`SELECT CAST(COUNT(*) AS CHAR) AS shoppingcount FROM shoppingnode 
-  WHERE shoppingdate BETWEEN ${startdate} AND ${enddate}
-  AND shoppingnode.futurepurchase = false`;
+  WHERE shoppingnode.usersID = 3
+  AND shoppingdate BETWEEN ${startdate} AND ${enddate}
+  AND shoppingnode.futurepurchase = 0`;
   
   // res.json({total: Number(countshoppingtrips[0]["COUNT(*)"])}); Yeah because it's a bigint for some reason
   // Most visted store
   let mostvisitedstore = await prisma.$queryRaw`SELECT ST.storename, CAST(COUNT(ST.storeID) AS CHAR) AS storecount FROM store as ST
   INNER JOIN shoppingnode as SN ON ST.storeID = SN.storeID
-  WHERE SN.shoppingdate BETWEEN ${startdate} AND ${enddate}
+  WHERE SN.usersID = 3 
+  AND SN.shoppingdate BETWEEN ${startdate} AND ${enddate}
   GROUP BY ST.storeID ORDER BY COUNT(ST.storeID) desc LIMIT 1;`;
 
   res.json({
