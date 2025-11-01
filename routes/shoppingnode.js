@@ -28,30 +28,41 @@ router.get('/', async(req, res) => {
   AND shoppingnode.futurepurchase = 0`;
 
   // Find total amount spend (from receipts linked to shoppingnode)
-  let totalspend = await prisma.$queryRaw`SELECT SUM(price) FROM receipt as RE
+  let totalspend = await prisma.$queryRaw`SELECT SUM(price) AS totalprice FROM receipt as RE
   INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
   WHERE shoppingdate BETWEEN ${startdate} AND ${enddate} AND
   SN.usersID = 3 AND SN.futurepurchase = 0;`;
 
   // Count # shopping trips
-  let countshoppingtrips = await prisma.$queryRaw`SELECT CAST(COUNT(*) AS CHAR) FROM shoppingnode 
+  let countshoppingtrips = await prisma.$queryRaw`SELECT CAST(COUNT(*) AS CHAR) AS shoppingcount FROM shoppingnode 
   WHERE shoppingdate BETWEEN ${startdate} AND ${enddate}
   AND shoppingnode.futurepurchase = false`;
   
   // res.json({total: Number(countshoppingtrips[0]["COUNT(*)"])}); Yeah because it's a bigint for some reason
   // Most visted store
-  /*let mostvisitedstore = await prisma.$queryRaw`SELECT RE.storeID, ST.storename, CAST(Count(RE.storeID) AS CHAR) as VisitCount FROM receipt as RE
-  INNER JOIN shoppingnode as SN on RE.receiptID = SN.receiptID
-  INNER JOIN store as ST on RE.storeID = ST.storeID
-  WHERE SN.shoppingdate BETWEEN ${startdate} AND ${enddate} 
-  AND SN.usersID = 3 AND SN.futurepurchase = false GROUP BY storeID ORDER BY VisitCount desc LIMIT 1;`;*/
+  let mostvisitedstore = await prisma.$queryRaw`SELECT ST.storename, CAST(COUNT(ST.storeID) AS CHAR) AS storecount FROM store as ST
+  INNER JOIN shoppingnode as SN ON ST.storeID = SN.storeID
+  WHERE SN.shoppingdate BETWEEN ${startdate} AND ${enddate}
+  GROUP BY ST.storeID ORDER BY COUNT(ST.storeID) desc LIMIT 1;`;
 
   res.json({
     nodes: shoppingnodes,
     total: totalspend,
     count: countshoppingtrips,
-    //store: mostvisitedstore
+    store: mostvisitedstore
   });
+})
+
+router.delete('/:id', async(req, res) => {
+  let deleteID = req.params.id;
+
+  let deletedNode = await prisma.shoppingnode.delete({
+    where:{
+      shoppingnodeID: parseInt(deleteID)
+    }
+  });
+
+  res.json(deletedNode);
 })
 
 function findstartdate(dmy){
