@@ -7,6 +7,8 @@ const router = express.Router();
 const {PrismaClient} = require('../generated/prisma');
 const prisma = new PrismaClient();
 
+const { startOfWeek, startOfMonth, startOfYear, format } = require('date-fns');
+
 //--------------------------------
 //[GET] metricsdata (METRICS & ANALYSIS PAGE)
 //RETURN Generalmetrics, CategoryRatios and Data Visualization
@@ -38,8 +40,40 @@ router.get('/', async(req, res) => {
   });
 })
 
-router.get('/', async(req, res) => {
+router.get('/graph', async(req, res) => {
+  let catname = req.body.cat;
+  let timefilter = req.body.filter;
 
+  let startdate = format(findstartdate(timefilter), "yyyy-MM-dd");
+  let enddate = format(new Date(), "yyyy-MM-dd");
+
+  let graphdata = await prisma.$queryRaw`SELECT CA.categoryname, SUM(RE.quantifier) as Amountbought, SUM(RE.price) as Totalprice, SN.shoppingdate FROM category as CA
+  INNER JOIN product as PR on CA.categoryID = PR.categoryID
+  INNER JOIN receipt as RE on RE.productID = PR.productID
+  INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
+  WHERE SN.usersID = 3 
+  AND CA.categoryname = ${catname}
+  AND SN.shoppingdate BETWEEN ${startdate} AND ${enddate}
+  GROUP BY CA.categoryname, SN.shoppingdate
+  ORDER BY SN.shoppingdate asc;`;
+
+  res.json(graphdata);
 })
+
+function findstartdate(dmy){
+  const today = new Date();
+  if(dmy == "week"){
+    const weekStart = startOfWeek(today, { weekStartsOn: 1 });
+    return weekStart
+  }
+  else if(dmy == "month"){
+    const monthStart = startOfMonth(today);
+    return monthStart;
+  }
+  else if(dmy == "year"){
+    const yearStart = startOfYear(today);
+    return yearStart;
+  }
+}
 
 module.exports = router;
