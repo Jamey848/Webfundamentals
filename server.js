@@ -8,11 +8,13 @@ const usersRouter = require("./routes/users");
 const shoppingnodeRouter = require("./routes/shoppingnode");
 const receiptRouter = require("./routes/receipt");
 const metricsRouter = require("./routes/metrics");
+const adminRouter = require("./routes/admin");
 
 app.use("/users", usersRouter);
 app.use("/shoppingnode", shoppingnodeRouter);
 app.use("/receipt", receiptRouter);
 app.use("/metrics", metricsRouter);
+app.use("/admin", adminRouter);
 
 app.use(express.json());
 
