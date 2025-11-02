@@ -73,12 +73,15 @@ INSERT INTO  unit (unitname) VALUES ("box");
 INSERT INTO category (categoryname) VALUES ("spices & herbs");
 
 INSERT INTO product (productname, categoryID) VALUES(
-"carrots",
+"beer",
 (SELECT categoryID FROM category WHERE categoryname LIKE "vegetables")
 );
 
 SELECT * FROM product;
 SELECT * FROM receipt;
+SELECT * FROM unit;
+INSERT INTO unit (unitname) VALUES ("cl");
+SELECT * FROM category;
 
 INSERT receipt (shoppingnodeID, productID, unitID, price, quantity, quantifier) VALUES(
 51,
@@ -142,6 +145,9 @@ AND SN.usersID = 3;
 ALTER TABLE receipt DROP COLUMN storeID;
 ALTER TABLE receipt DROP FOREIGN KEY receipt_ibfk_2;
 
+SELECT * FROM shoppingnode as SN
+INNER JOIN receipt as RE on SN.shoppingnodeID = RE.shoppingnodeID
+WHERE SN.usersID = 3 AND SN.shoppingnodeID = 51;
 
 SELECT * FROM shoppingnode;
 
@@ -174,6 +180,42 @@ select * from product;
 select * from category;
 select * from unit;
 
-UPDATE unit 
-SET unitname = "#"
-WHERE unit.unitID = 1;
+SELECT CONCAT('€', SUM(price)) as TotalSum, CONCAT('€',ROUND(AVG(price), 2)) as AverageSUM 
+FROM receipt as RE
+INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
+WHERE SN.usersID = 3;
+
+SELECT * FROM receipt as RE;
+
+SELECT CA.categoryname, COUNT(CA.categoryname) as categorycount, SUM(RE.price) as totalprice FROM category as CA
+INNER JOIN product AS PR ON CA.categoryID = PR.categoryID
+INNER JOIN receipt AS RE ON PR.productID = RE.productID
+INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
+WHERE SN.usersID = 3 GROUP BY CA.categoryname ORDER BY categorycount desc;
+
+SELECT SUM(price);
+
+SELECT CA.categoryname, SUM(RE.quantifier) as Amountbought, SUM(RE.price) as Totalprice, SN.shoppingdate FROM category as CA
+INNER JOIN product as PR on CA.categoryID = PR.categoryID
+INNER JOIN receipt as RE on RE.productID = PR.productID
+INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
+WHERE SN.usersID = 3 AND CA.categoryname = "fruit"
+GROUP BY CA.categoryname, SN.shoppingdate
+ORDER BY SN.shoppingdate asc;
+SELECT * FROM users;
+SELECT 
+  CA.categoryname, 
+  SUM(RE.quantifier) AS total_items, 
+  SUM(RE.price) AS total_spent, 
+  SN.shoppingdate
+FROM category AS CA
+INNER JOIN product AS PR ON CA.categoryID = PR.categoryID
+INNER JOIN receipt AS RE ON RE.productID = PR.productID
+INNER JOIN shoppingnode AS SN ON RE.shoppingnodeID = SN.shoppingnodeID
+WHERE SN.usersID = 3 AND CA.categoryname = "fruit"
+GROUP BY CA.categoryname, SN.shoppingdate
+ORDER BY SN.shoppingdate;
+
+SELECT * FROM receipt as RE
+INNER JOIN product as PR on RE.productID = RE.productID;
+SELECT * FROM category;

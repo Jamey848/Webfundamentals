@@ -15,6 +15,8 @@ const { startOfWeek, startOfMonth, startOfYear, format } = require('date-fns');
 //--------------------------------
 
 router.get('/', async(req, res) => {
+  let userID = req.body.uID;
+
   let Generalmetrics = await prisma.$queryRaw`SELECT SUM(price) as TotalSum, ROUND(AVG(price), 2) as AverageSum
   FROM receipt as RE
   INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
@@ -43,6 +45,7 @@ router.get('/', async(req, res) => {
 router.get('/graph', async(req, res) => {
   let catname = req.body.cat;
   let timefilter = req.body.filter;
+  let userID = req.body.uID;
 
   let startdate = format(findstartdate(timefilter), "yyyy-MM-dd");
   let enddate = format(new Date(), "yyyy-MM-dd");

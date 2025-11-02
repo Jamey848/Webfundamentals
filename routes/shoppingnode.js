@@ -29,20 +29,20 @@ router.get('/', async(req, res) => {
   let enddate = format(new Date(), "yyyy-MM-dd");
   
   let shoppingnodes = await prisma.$queryRaw`SELECT * FROM shoppingnode 
-  WHERE shoppingnode.usersID = 3
+  WHERE shoppingnode.usersID = ${userID}
   AND shoppingdate BETWEEN ${startdate} AND ${enddate}
   AND shoppingnode.futurepurchase = 0`;
 
   // Find total amount spend (from receipts linked to shoppingnode)
   let totalspend = await prisma.$queryRaw`SELECT SUM(price) AS totalprice FROM receipt as RE
   INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
-  WHERE SN.usersID = 3
+  WHERE SN.usersID = ${userID}
   AND shoppingdate BETWEEN ${startdate} AND ${enddate} 
   AND SN.futurepurchase = 0;`;
 
   // Count # shopping trips
   let countshoppingtrips = await prisma.$queryRaw`SELECT CAST(COUNT(*) AS CHAR) AS shoppingcount FROM shoppingnode 
-  WHERE shoppingnode.usersID = 3
+  WHERE shoppingnode.usersID = ${userID}
   AND shoppingdate BETWEEN ${startdate} AND ${enddate}
   AND shoppingnode.futurepurchase = 0`;
   
@@ -50,7 +50,7 @@ router.get('/', async(req, res) => {
   // Most visted store
   let mostvisitedstore = await prisma.$queryRaw`SELECT ST.storename, CAST(COUNT(ST.storeID) AS CHAR) AS storecount FROM store as ST
   INNER JOIN shoppingnode as SN ON ST.storeID = SN.storeID
-  WHERE SN.usersID = 3 
+  WHERE SN.usersID = ${userID} 
   AND SN.shoppingdate BETWEEN ${startdate} AND ${enddate}
   GROUP BY ST.storeID ORDER BY COUNT(ST.storeID) desc LIMIT 1;`;
 
