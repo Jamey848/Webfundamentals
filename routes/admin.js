@@ -34,4 +34,12 @@ router.get('/:id', async(req,res) => {
     }
 })
 
+//------------------------------
+// [PUT] all user information (ADMIN DASHBOARD)
+// Data. Username, Gmail & Permission (mostly just permission that is important)
+//------------------------------
+
+router.put
+
+
 module.exports = router;

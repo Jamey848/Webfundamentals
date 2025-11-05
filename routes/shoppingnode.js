@@ -62,6 +62,20 @@ router.get('/', async(req, res) => {
   });
 })
 
+//----------------------------------
+// [PUT] Shoppingnode
+// Users can insert a new shoppingnode.
+//----------------------------------
+
+router.post('/', async(req, res) => {
+  // First! We must initialize the shoppingnode itself
+  let nodename = req.body.nodename;
+  let store = req.body.store;
+  let date = req.body.date;
+
+  //if(nodename )
+})
+
 router.delete('/:id', async(req, res) => {
   let deleteID = req.params.id;
 
