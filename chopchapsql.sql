@@ -3,7 +3,6 @@ usersID int not null auto_increment,
 username varchar(255) not null,
 userpassword varchar(255) not null,
 gmail varchar(255) not null,
-budget decimal(10, 2),
 permission int not null,
 PRIMARY KEY (usersID)
 );
@@ -34,30 +33,39 @@ PRIMARY KEY (productID),
 FOREIGN KEY (categoryID) REFERENCES category(categoryID)
 );
 
-CREATE TABLE receipt(
-receiptID int not null auto_increment,
+CREATE TABLE receiptitems(
+receiptitems int not null auto_increment,
 productID int not null,
 storeID int not null,
 unitID int not null,
-shoppingnodeID int not null,
+receiptID int not null,
 price decimal(10, 2),
 quantity int,
 quantifier int,
-PRIMARY KEY (receiptID),
+PRIMARY KEY (receiptitems),
 FOREIGN KEY (productID) REFERENCES product(productID),
 FOREIGN KEY (storeID) REFERENCES store(storeID),
 FOREIGN KEY (unitID) REFERENCES unit(unitID),
-FOREIGN KEY (shoppingnodeID) REFERENCES shoppingnode(shoppingnodeID)
+FOREIGN KEY (receiptID) REFERENCES receipt(receiptID)
 );
 
-CREATE TABLE shoppingnode(
-shoppingnodeID int not null auto_increment,
+CREATE TABLE receipt(
+receiptID int not null auto_increment,
 usersID int not null,
-shoppingnodename varchar(255),
-shoppingdate date,
+receiptname varchar(255),
+receiptdate date,
 futurepurchase boolean,
-PRIMARY KEY (shoppingnodeID),
+PRIMARY KEY (receiptID),
 FOREIGN KEY (usersID) REFERENCES users(usersID)
+);
+
+CREATE TABLE budget(
+budgetID int not null auto_increment,
+usersID int not null,
+budgetamount decimal(10,2),
+startdate date,
+enddate date,
+PRIMARY KEY(budgetID)
 );
 
 INSERT INTO users (username, userpassword, gmail, budget, permission) VALUES ("JeffTheBanned", "Heyaa", "maaktnieuit", 0, 3);
@@ -193,13 +201,19 @@ INNER JOIN receipt AS RE ON PR.productID = RE.productID
 INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
 WHERE SN.usersID = 3 GROUP BY CA.categoryname ORDER BY categorycount desc;
 
+SELECT * FROM users;
+
+INSERT INTO users (username, userpassword, gmail, permission) VALUES ("SamuraiJack", "AKU", "@gmail.com", 2);
+
+UPDATE users SET gmail = "jammie.verlinden@gmail.com" WHERE usersID = 3;
+
 SELECT SUM(price);
 
 SELECT CA.categoryname, SUM(RE.quantifier) as Amountbought, SUM(RE.price) as Totalprice, SN.shoppingdate FROM category as CA
 INNER JOIN product as PR on CA.categoryID = PR.categoryID
 INNER JOIN receipt as RE on RE.productID = PR.productID
 INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
-WHERE SN.usersID = 3 AND CA.categoryname = "fruit"
+WHERE SN.usersID = 3
 GROUP BY CA.categoryname, SN.shoppingdate
 ORDER BY SN.shoppingdate asc;
 SELECT * FROM users;
@@ -216,6 +230,12 @@ WHERE SN.usersID = 3 AND CA.categoryname = "fruit"
 GROUP BY CA.categoryname, SN.shoppingdate
 ORDER BY SN.shoppingdate;
 
+
+
 SELECT * FROM receipt as RE
 INNER JOIN product as PR on RE.productID = RE.productID;
 SELECT * FROM category;
+
+SELECT * FROM category;
+INSERT INTO category (categoryname) VALUES ("alcohol");
+

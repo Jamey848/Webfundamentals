@@ -39,7 +39,7 @@ router.get('/:id', async(req,res) => {
 // Data. Username, Gmail & Permission (mostly just permission that is important)
 //------------------------------
 
-router.put
+//router.put
 
 
 module.exports = router;
