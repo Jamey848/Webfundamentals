@@ -94,7 +94,6 @@ router.post('/', async(req, res) => {
             username: usersName,
             userpassword: hashedPassword,
             gmail: usersGmail,
-            budget: null,
             permission: 1
           }
         });
