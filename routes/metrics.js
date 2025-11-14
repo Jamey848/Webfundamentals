@@ -15,18 +15,20 @@ const { startOfWeek, startOfMonth, startOfYear, format } = require('date-fns');
 //--------------------------------
 
 router.get('/', async(req, res) => {
-  let userID = req.body.uID;
+  let userID = req.body.userID;
 
   let Generalmetrics = await prisma.$queryRaw`SELECT SUM(price) as TotalSum, ROUND(AVG(price), 2) as AverageSum
-  FROM receipt as RE
-  INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
-  WHERE SN.usersID = 3;`;
+  FROM receiptitems as RI
+  INNER JOIN receipt as RE on RE.receiptID = RI.receiptID
+  WHERE RE.usersID = ${userID};`;
 
-  let Topthree = await prisma.$queryRaw`SELECT CA.categoryname, CAST(COUNT(CA.categoryname) AS CHAR) as categorycount, CAST(SUM(RE.price) AS CHAR) as totalprice FROM category as CA
+  let Topthree = await prisma.$queryRaw`SELECT CA.categoryname, CAST(COUNT(CA.categoryname) AS CHAR) as categorycount, CAST(SUM(RI.price) AS CHAR) as totalprice FROM category as CA
   INNER JOIN product AS PR ON CA.categoryID = PR.categoryID
-  INNER JOIN receipt AS RE ON PR.productID = RE.productID
-  INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
-  WHERE SN.usersID = 3 GROUP BY CA.categoryname ORDER BY COUNT(CA.categoryname) desc;`;
+  INNER JOIN receiptitems AS RI ON PR.productID = RI.productID
+  INNER JOIN receipt as RE on RI.receiptID = RE.receiptID
+  WHERE RE.usersID = ${userID} 
+  GROUP BY CA.categoryname 
+  ORDER BY COUNT(CA.categoryname) desc;`;
 
   let categorytotal = parseFloat(Generalmetrics[0].TotalSum);
 
@@ -43,22 +45,22 @@ router.get('/', async(req, res) => {
 })
 
 router.get('/graph', async(req, res) => {
-  let catname = req.body.cat;
-  let timefilter = req.body.filter;
-  let userID = req.body.uID;
+  let CategoryName = req.body.CategoryName;
+  let TimeFilter = req.body.TimeFilter;
+  let userID = req.body.userID;
 
-  let startdate = format(findstartdate(timefilter), "yyyy-MM-dd");
+  let startdate = format(findstartdate(TimeFilter), "yyyy-MM-dd");
   let enddate = format(new Date(), "yyyy-MM-dd");
 
-  let graphdata = await prisma.$queryRaw`SELECT CA.categoryname, SUM(RE.quantifier) as Amountbought, SUM(RE.price) as Totalprice, SN.shoppingdate FROM category as CA
+  let graphdata = await prisma.$queryRaw`SELECT CA.categoryname, SUM(RI.amount) as Amountbought, SUM(RI.price) as Totalprice, RE.receiptdate FROM category as CA
   INNER JOIN product as PR on CA.categoryID = PR.categoryID
-  INNER JOIN receipt as RE on RE.productID = PR.productID
-  INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
-  WHERE SN.usersID = 3 
-  AND CA.categoryname = ${catname}
-  AND SN.shoppingdate BETWEEN ${startdate} AND ${enddate}
-  GROUP BY CA.categoryname, SN.shoppingdate
-  ORDER BY SN.shoppingdate asc;`;
+  INNER JOIN receiptitems as RI on RI.productID = PR.productID
+  INNER JOIN receipt as RE on RI.receiptID = RE.receiptID
+  WHERE RE.usersID = ${userID} 
+  AND CA.categoryname = ${CategoryName}
+  AND RE.receiptdate BETWEEN ${startdate} AND ${enddate}
+  GROUP BY CA.categoryname, RE.receiptdate
+  ORDER BY RE.receiptdate asc;`;
 
   res.json(graphdata);
 })

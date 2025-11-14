@@ -31,12 +31,15 @@ model receipt {
   receiptdate    DateTime?      @db.Date
   futurepurchase Boolean?
   storeID        Int
+  budgetID       Int?
+  budget         budget?        @relation(fields: [budgetID], references: [budgetID], onDelete: NoAction, onUpdate: NoAction, map: "fk_budget")
   store          store          @relation(fields: [storeID], references: [storeID], onDelete: NoAction, onUpdate: NoAction, map: "fk_receipt_store")
   users          users          @relation(fields: [usersID], references: [usersID], onDelete: NoAction, onUpdate: NoAction, map: "receipt_ibfk_1")
   receiptitems   receiptitems[]
 
   @@index([usersID], map: "usersID")
   @@index([storeID], map: "fk_receipt_store")
+  @@index([budgetID], map: "fk_budget")
 }
 
 model store {
@@ -66,19 +69,20 @@ model budget {
   budgetamount Decimal?  @db.Decimal(10, 2)
   startdate    DateTime? @db.Date
   enddate      DateTime? @db.Date
+  receipt      receipt[]
 }
 
 model receiptitems {
-  receiptitems Int      @id @default(autoincrement())
-  productID    Int
-  unitID       Int
-  receiptID    Int
-  price        Decimal? @db.Decimal(10, 2)
-  quantity     Int?
-  amount       Int?
-  product      product  @relation(fields: [productID], references: [productID], onDelete: NoAction, onUpdate: NoAction, map: "receiptitems_ibfk_1")
-  unit         unit     @relation(fields: [unitID], references: [unitID], onDelete: NoAction, onUpdate: NoAction, map: "receiptitems_ibfk_3")
-  receipt      receipt  @relation(fields: [receiptID], references: [receiptID], onDelete: NoAction, onUpdate: NoAction, map: "receiptitems_ibfk_4")
+  receiptitemsID Int      @id @default(autoincrement())
+  productID      Int
+  unitID         Int
+  receiptID      Int
+  price          Decimal? @db.Decimal(10, 2)
+  quantity       Int?
+  amount         Int?
+  product        product  @relation(fields: [productID], references: [productID], onDelete: NoAction, onUpdate: NoAction, map: "receiptitems_ibfk_1")
+  unit           unit     @relation(fields: [unitID], references: [unitID], onDelete: NoAction, onUpdate: NoAction, map: "receiptitems_ibfk_3")
+  receipt        receipt  @relation(fields: [receiptID], references: [receiptID], onDelete: NoAction, onUpdate: NoAction, map: "receiptitems_ibfk_4")
 
   @@index([productID], map: "productID")
   @@index([receiptID], map: "receiptID")

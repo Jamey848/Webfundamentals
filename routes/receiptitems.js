@@ -15,17 +15,15 @@ const prisma = new PrismaClient();
 
 router.get('/:id', async(req, res) => { 
   let snID = req.params.id;
-  let userID = req.body.uID;
 
     // Receiptitems => In the page productlist; you must be able to see your full receipt (with ID = ... depending on which shoppingnode you clicked in the list. In ShoppingHistory)
     // The order goes: ID (not shown, but needed if users want to edit / delete it), productname, price, QF x QT Unit (example: 5 x 1l), Categoryname
-    let receiptitems = await prisma.$queryRaw`SELECT RE.receiptID, PR.productname, RE.price, CONCAT(RE.quantifier, ' x ', RE.quantity, UN.unitname) as QUA, CA.categoryname FROM receipt as RE
-    INNER JOIN product as PR on RE.productID = PR.productID
+    let receiptitems = await prisma.$queryRaw`SELECT RI.receiptitemsID, PR.productname, RI.price, CONCAT(RI.amount, ' x ', RI.quantity, UN.unitname) as QUA, CA.categoryname FROM receiptitems as RI
+    INNER JOIN product as PR on RI.productID = PR.productID
     INNER JOIN category as CA on PR.categoryID = CA.categoryID
-    INNER JOIN unit as UN on RE.unitID = UN.unitID 
-    INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
-    WHERE SN.usersID = 3 
-    AND RE.shoppingnodeID = ${snID};`;
+    INNER JOIN unit as UN on RI.unitID = UN.unitID 
+    INNER JOIN receipt as RE on RE.receiptID = RI.receiptID
+    WHERE RE.receiptID = ${snID};`;
 
   res.json(receiptitems);
 })
@@ -33,9 +31,9 @@ router.get('/:id', async(req, res) => {
 router.delete('/:id', async(req, res) =>{
   let delID = req.params.id;
 
-  let deleteditem = await prisma.receipt.delete({
+  let deleteditem = await prisma.receiptitems.delete({
     where:{
-      receiptID: parseInt(delID)
+      receiptitemsID: parseInt(delID)
     }
   });
 
@@ -48,51 +46,46 @@ router.delete('/:id', async(req, res) =>{
 //-----------------------------------------------
 
 router.post('/:id', async(req, res) => {
-  let reqNodeID = req.params.id;
+  let ReceiptID = req.params.id;
 
-  let reqName = req.body.reqName;
-  let reqPrice = req.body.reqPrice;
-  let reqQuantity = req.body.reqQuantity;
-  let reqUnit = req.body.reqUnit; // Always correct. Dropdown menu
-  let reqQuantifier = req.body.reqQuantifier;
-  let reqCategory = req.body.reqCategory; // Always correct. Dropdown menu
+  let ProductName = req.body.ProductName;
+  let RIprice = req.body.RIprice;
+  let RIquantity = req.body.RIquantity;
+  let RIunit = req.body.RIunit; // Always correct. Dropdown menu
+  let RIamount = req.body.RIamount;
+  let ProductCategory = req.body.ProductCategory; // Always correct. Dropdown menu
   
   // Nothing may be empty, all data must be present in order to insert new receiptitem.
 
-  if(reqName !== undefined && reqCategory !== undefined && reqPrice !== undefined && reqQuantity !== undefined && reqUnit !== undefined && reqQuantifier !== undefined){
-    let ct = checktypes(reqName, reqPrice, reqQuantity, reqQuantifier); // Correct datatypes?
+  if(ProductName !== undefined && RIprice !== undefined && RIquantity !== undefined && RIunit !== undefined && RIamount !== undefined && ProductCategory !== undefined){
+    let ct = checktypes(ProductName, RIprice, RIquantity, RIamount); // Correct datatypes?
     if(!ct){
       res.json({"error": "wrong datatypes"});
     }
     else{
-      let prcheck = await productcheck(reqName, reqCategory); // => If product exists: only append its categoryID.
+      let prcheck = await productcheck(ProductName, ProductCategory); // => If product exists: get it.
                                                               // => If product does not exist: insert new product with specified categoryID.
+
+      console.log("prcheck: " + prcheck);
       let unitsearch = await prisma.unit.findMany({
         where:{
-          unitname: reqUnit
+          unitname: RIunit
         }
       })
       let unID = unitsearch[0].unitID; // Get unittype from table units. (In g? kg? l? ml? ...)
 
-      let insertProduct = await prisma.receipt.create({ // Insert product with provided data.
+      let insertProduct = await prisma.receiptitems.create({ // Insert product with provided data.
         data:{
-          productID: prcheck,
-          unitID: unID,
-          price: reqPrice,
-          quantity: reqQuantity,
-          quantifier: reqQuantifier,
-          shoppingnodeID: parseInt(reqNodeID)
+          productID: parseInt(prcheck),
+          unitID: parseInt(unID),
+          price: RIprice,
+          quantity: RIquantity,
+          amount: RIamount,
+          receiptID: parseInt(ReceiptID)
         }
       })
       res.json(insertProduct);
     }
-    
-    /*if(!ct){
-      res.json({"error": "incorrect datatypes"});
-    }
-    else{
-      
-    }*/
   }
   else{
     res.json({
@@ -117,24 +110,9 @@ async function productcheck(proName, catName) {
         categoryID: categoryID
       }
     });
-
     return newProduct.productID;
   }
   else if(productExists.length > 0){
-    let categoryIDResult = await prisma.$queryRaw`SELECT categoryID FROM category
-    WHERE categoryname LIKE ${catName};`
-
-    let categoryID = categoryIDResult[0].categoryID;
-
-    await prisma.product.update({
-      where:{
-        productID: productExists[0].productID
-      },
-      data:{
-        categoryID: parseInt(categoryID)
-      }
-    });
-
     return productExists[0].productID;
   }
 }
@@ -154,59 +132,5 @@ function checktypes(na, pr, qy, qf){
   }
   return true;
 }
-
-// Not sure what this is...
-/*router.put('/:id', ', async(req, res) => {
-  // Define which receiptitem to append
-  let recID = req.params.recID;
-  
-  // Define new data for specified receiptitem
-  let recName = req.body.recName;
-  let recPrice = req.body.recPrice;
-  let recQuantifier = req.body.recQuantifier;
-  let recCategory = req.body.recCategory;
-
-  let response = {};
-
-  if(recName !== undefined){
-    let productExists = await prisma.$queryRaw`SELECT productID FROM product
-    WHERE productname LIKE(%${recName}%)`;
-
-    if(productExists.length === 0 && recCategory !== undefined){
-      let categoryID = await prisma.$queryRaw`SELECT categoryID FROM category
-      WHERE categoryname LIKE (${recCategory});`
-
-      let newProduct = await prisma.product.create({
-        data: {
-          productname: recName,
-          categoryID: categoryID
-        }
-      });
-
-      let insertedID = newProduct.productID;
-
-      let insertRec = await prisma.$queryRaw`UPDATE receipt 
-      SET productID = ${insertedID}
-      WHERE receiptID = ${recID};`
-    }
-    else{
-      response.error = "Specify category for new product";
-    }
-
-  }
-  if(recPrice !== undefined){
-    let updatePrice = await prisma.$queryRaw`UPDATE receipt 
-    SET price = ${recPrice}
-    WHERE receiptID = ${recID};`
-  }
-  if(recQuantifier !== undefined){
-    let updateQuantifier = await prisma.$queryRaw`UPDATE receipt 
-    SET quantifier = ${recQuantifier}
-    WHERE receiptID = ${recID};`
-  }
-  if(recCategory !== undefined){
-
-  }
-})*/
 
 module.exports = router;
