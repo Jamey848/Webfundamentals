@@ -31,21 +31,27 @@ router.get('/', async(req, res) => {
   
   let receipts = await prisma.$queryRaw`SELECT * FROM receipt 
   WHERE receipt.usersID = ${userID}
-  AND receiptdate BETWEEN ${startdate} AND ${enddate}
-  AND receipt.futurepurchase = ${futurepurchase}`;
+  AND 
+    (${futurepurchase} = 1 AND receipt.futurepurchase = 1)
+    OR (${futurepurchase} = 0
+    AND receiptdate BETWEEN ${startdate} AND ${enddate})`;
 
   // Find total amount spend (from receipts linked to shoppingnode)
   let totalspend = await prisma.$queryRaw`SELECT SUM(price) AS totalprice FROM receiptitems as RI
   INNER JOIN receipt as RE on RI.receiptID = RI.receiptID
   WHERE RE.usersID = ${userID}
-  AND receiptdate BETWEEN ${startdate} AND ${enddate} 
-  AND RE.futurepurchase = ${futurepurchase};`;
+  AND 
+    (${futurepurchase} = 1 AND RE.futurepurchase = 1)
+    OR (${futurepurchase} = 0
+    AND RE.receiptdate BETWEEN ${startdate} AND ${enddate})`;
 
   // Count # shopping trips
   let countshoppingtrips = await prisma.$queryRaw`SELECT CAST(COUNT(*) AS CHAR) AS shoppingcount FROM receipt 
   WHERE receipt.usersID = ${userID}
-  AND receiptdate BETWEEN ${startdate} AND ${enddate}
-  AND receipt.futurepurchase = ${futurepurchase}`;
+  AND 
+    (${futurepurchase} = 1 AND receipt.futurepurchase = 1)
+    OR (${futurepurchase} = 0
+    AND receiptdate BETWEEN ${startdate} AND ${enddate})`;
 
   // res.json({total: Number(countshoppingtrips[0]["COUNT(*)"])}); Yeah because it's a bigint for some reason
   // Most visted store
@@ -53,15 +59,18 @@ router.get('/', async(req, res) => {
   let mostvisitedstore = await prisma.$queryRaw`SELECT ST.storename, CAST(COUNT(ST.storeID) AS CHAR) AS storecount FROM store as ST
   INNER JOIN receipt as RE ON ST.storeID = RE.storeID
   WHERE RE.usersID = ${userID} 
-  AND RE.futurepurchase = ${futurepurchase} 
-  AND RE.receiptdate BETWEEN ${startdate} AND ${enddate}
+  AND 
+    (${futurepurchase} = 1 AND RE.futurepurchase = 1)
+    OR (${futurepurchase} = 0
+    AND RE.receiptdate BETWEEN ${startdate} AND ${enddate})
   GROUP BY ST.storeID ORDER BY COUNT(ST.storeID) desc LIMIT 1;`;
 
   res.json({
     nodes: receipts,
     total: totalspend,
     count: countshoppingtrips,
-    store: mostvisitedstore
+    store: mostvisitedstore,
+    isfuture: futurepurchase
   });
 })
 
@@ -72,9 +81,13 @@ router.get('/', async(req, res) => {
 
 router.post('/', async(req, res) => {
   // First! We must initialize the receipt itself
-  let nodename = req.body.nodename;
-  let store = req.body.store;
-  let date = req.body.date;
+  let ReceiptName = req.body.ReceiptName;
+  let StoreName = req.body.StoreName;
+  let Date = req.body.Date;
+  let BudgetID = req.body.BudgetID;
+  let FuturePurchase = req.body.FuturePurchase;
+
+  
 
   //if(nodename )
 })
@@ -82,9 +95,9 @@ router.post('/', async(req, res) => {
 router.delete('/:id', async(req, res) => {
   let deleteID = req.params.id;
 
-  let deletedNode = await prisma.shoppingnode.delete({
+  let deletedNode = await prisma.receipt.delete({
     where:{
-      shoppingnodeID: parseInt(deleteID)
+      receiptID: parseInt(deleteID)
     }
   });
 

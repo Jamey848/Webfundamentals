@@ -7,6 +7,8 @@ const router = express.Router();
 const {PrismaClient} = require('../generated/prisma');
 const prisma = new PrismaClient();
 
+const { addReceiptItem } = require("../services/addreceiptitem");
+
 // --------------------------------------------
 // [GET] Receipt (PRODUCTLIST PAGE)
 // RETURN (name, price, QUA: Quantity Unit x Amount, category)
@@ -74,7 +76,17 @@ router.post('/:id', async(req, res) => {
       })
       let unID = unitsearch[0].unitID; // Get unittype from table units. (In g? kg? l? ml? ...)
 
-      let insertProduct = await prisma.receiptitems.create({ // Insert product with provided data.
+      itemdata = {
+        productID: parseInt(prcheck),
+        unitID: parseInt(unID),
+        price: RIprice,
+        quantity: RIquantity,
+        amount: RIamount,
+        receiptID: parseInt(ReceiptID)
+      }
+
+      let insertItem = await addReceiptItem(itemdata);
+      /*let insertProduct = await prisma.receiptitems.create({ // Insert product with provided data.
         data:{
           productID: parseInt(prcheck),
           unitID: parseInt(unID),
@@ -83,8 +95,8 @@ router.post('/:id', async(req, res) => {
           amount: RIamount,
           receiptID: parseInt(ReceiptID)
         }
-      })
-      res.json(insertProduct);
+      })*/
+      res.json(insertItem);
     }
   }
   else{

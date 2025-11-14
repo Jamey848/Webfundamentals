@@ -82,7 +82,7 @@ model receiptitems {
   amount         Int?
   product        product  @relation(fields: [productID], references: [productID], onDelete: NoAction, onUpdate: NoAction, map: "receiptitems_ibfk_1")
   unit           unit     @relation(fields: [unitID], references: [unitID], onDelete: NoAction, onUpdate: NoAction, map: "receiptitems_ibfk_3")
-  receipt        receipt  @relation(fields: [receiptID], references: [receiptID], onDelete: NoAction, onUpdate: NoAction, map: "receiptitems_ibfk_4")
+  receipt        receipt  @relation(fields: [receiptID], references: [receiptID], onDelete: Cascade, onUpdate: NoAction, map: "receiptitems_ibfk_4")
 
   @@index([productID], map: "productID")
   @@index([receiptID], map: "receiptID")
