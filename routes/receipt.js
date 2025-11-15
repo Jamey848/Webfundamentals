@@ -81,15 +81,22 @@ router.get('/', async(req, res) => {
 
 router.post('/', async(req, res) => {
   // First! We must initialize the receipt itself
-  let ReceiptName = req.body.ReceiptName;
-  let StoreName = req.body.StoreName;
-  let Date = req.body.Date;
-  let BudgetID = req.body.BudgetID;
-  let FuturePurchase = req.body.FuturePurchase;
 
-  
+  let userID = req.body.userID;
+  let storeID = req.body.storeID;
+  let receiptname = req.body.receiptname;
+  let budgetID = req.body.budgetID;
+  let futurepurchase = req.body.futurepurchase;
+  let date = req.body.date;
 
-  //if(nodename )
+  let result = await prisma.$queryRaw`
+  INSERT INTO Receipt (usersID, receiptname, storeID, receiptdate, budgetID, futurepurchase)
+  VALUES (${userID}, ${receiptname}, ${storeID}, ${date}, ${budgetID}, ${futurepurchase});`;
+
+  const [insertedReceipt] = await prisma.$queryRaw`
+  SELECT * FROM Receipt WHERE receiptID = LAST_INSERT_ID();`;
+
+  res.json(insertedReceipt);
 })
 
 router.delete('/:id', async(req, res) => {
