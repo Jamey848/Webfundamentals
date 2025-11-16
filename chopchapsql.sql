@@ -72,7 +72,7 @@ ALTER TABLE receiptitems RENAME COLUMN receiptitems TO receiptitemsID;
 ALTER TABLE receipt
 ADD COLUMN budgetID INT;
 
-INSERT INTO users (username, userpassword, gmail, budget, permission) VALUES ("JeffTheBanned", "Heyaa", "maaktnieuit", 0, 3);
+INSERT INTO users (username, userpassword, gmail, permission) VALUES ("James the Admin", "Heyaa", "maaktnieuit", 2);
 
 UPDATE users
 SET userpassword = '$2b$10$uMAZOjQB5tGeg4USxEyP9ONl/2HIEtMm3.eyajgfCwguaO05./dMm'
@@ -103,10 +103,14 @@ INSERT INTO product (productname, categoryID) VALUES(
 );
 
 SELECT * FROM product;
-SELECT * FROM receiptitems;
+SELECT * FROM receipt;
 SELECT * FROM unit;
 INSERT INTO unit (unitname) VALUES ("cl");
 SELECT * FROM category;
+SELECT * FROM store;
+SELECT * FROM budget;
+
+INSERT INTO budget (usersID, budgetamount) VALUES (1, 1000);
 
 INSERT receiptitems (receiptID, productID, unitID, price, quantity, amount) VALUES(
 4,
@@ -251,6 +255,8 @@ select * from product;
 select * from category;
 select * from unit;
 
+INSERT INTO unit (unitname) VALUES ("ml");
+
 SELECT CONCAT('€', SUM(price)) as TotalSum, CONCAT('€',ROUND(AVG(price), 2)) as AverageSUM 
 FROM receipt as RE
 INNER JOIN shoppingnode as SN on RE.shoppingnodeID = SN.shoppingnodeID
@@ -302,3 +308,16 @@ SELECT * FROM category;
 SELECT * FROM category;
 INSERT INTO category (categoryname) VALUES ("alcohol");
 
+SELECT RE.receiptname, RE.receiptdate, ST.storename, PR.productname, CONCAT(RI.amount, ' x ', RI.quantity, UN.unitname) as QUA, SUM(RI.price)
+FROM receipt as RE
+INNER JOIN receiptitems as RI on RE.receiptID = RI.receiptID
+INNER JOIN product as PR on RI.productID = PR.productID
+INNER JOIN store as ST on RE.storeID = ST.storeID
+INNER JOIN unit as UN on RI.unitID = UN.unitID
+WHERE RE.usersID = 1
+GROUP BY 
+    RE.receiptname,
+    RE.receiptdate,
+    ST.storename,
+    PR.productname,
+    QUA;

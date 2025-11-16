@@ -12,7 +12,7 @@ const prisma = new PrismaClient();
 // Data. Username, Gmail, Budget, Permission
 //------------------------------
 
-router.get('/:id', async(req,res) => {
+router.get('/dashboardcheck/:id', async(req,res) => {
     let admincheck = await prisma.users.findFirst({
         where:{
             usersID: parseInt(req.params.id)
@@ -96,6 +96,94 @@ router.put('/admin/:id', async(req,res) => {
     res.json({
         Status: "Success"
     })
+})
+
+router.post('/budget', async(req, res) => {
+    let usersID = req.body.usersID;
+    let budgetamount = req.body.budgetamount;
+
+    if(typeof budgetamount === "number")
+    {
+        await prisma.budget.create({
+            data:{
+                usersID: usersID,
+                budgetamount: budgetamount
+            }
+        });
+
+        res.json({
+            "status": "succes"
+        })
+    }
+    else
+    {
+        res.json({
+            "error": "wrong datatype"
+        })
+    }
+})
+
+router.get('/budget', async(req, res) => {
+    let usersID = req.body.userID;
+
+    let budgets = await prisma.budget.findMany({
+        where:{
+            usersID: usersID
+        }
+    });
+
+    res.json(budgets);
+})
+
+router.delete('/budget/:id', async(req, res) => {
+    let usersID = req.body.usersID;
+    let budgetID = req.params.id;
+
+    if(typeof budgetamount === "number")
+    {
+        await prisma.budget.delete({
+            where:{
+                userID: usersID,
+                budgetID: budgetID
+            }
+        });
+
+        res.json({
+            "status": "succes"
+        })
+    }
+    else
+    {
+        res.json({
+            "error": "wrong datatype"
+        })
+    }
+})
+
+router.put('/budget/:id', async(req, res) => {
+    let budgetamount = req.body.budgetamount;
+
+    if(typeof budgetamount === "number")
+    {
+        await prisma.budget.update({
+            where:{
+                budgetID: parseInt(req.params.id)
+            },
+            data:{
+                budgetamount: budgetamount
+            }
+        });
+
+        res.json({
+            "status": "succes"
+        })
+    }
+    else
+    {
+        res.json({
+            "error": "wrong datatype"
+        })
+    }
 })
 
 //router.put
