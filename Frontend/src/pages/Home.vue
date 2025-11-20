@@ -5,9 +5,9 @@
 <script setup>
     import { onMounted, ref } from 'vue';
 
-    import LoginWindow from '../components/Login.vue';
+    import RegisterWindow from '../components/Register.vue';
 
-    const showLogin = ref(false);
+    const showRegister = ref(false);
 </script>
 
 <!--
@@ -24,12 +24,12 @@
         TEXT TEXT TEXT
     </p>
     <br>
-    <p>Login to ShopChap</p>
-    <button @click="showLogin = true">Open Login</button>
+    <p>Create a new account!</p>
+    <button @click="showRegister = true">Register</button>
 
-    <LoginWindow
-      v-if="showLogin"
-      @close="showLogin = false"
-      @login="handleLogin"
+    <RegisterWindow
+      v-if="showRegister"
+      @close="showRegister = false"
+      @login="handleRegister"
     />
 </template>
