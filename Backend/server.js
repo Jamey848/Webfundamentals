@@ -1,5 +1,8 @@
 const express = require('express') // Import from node_modules
 const app = express() // Functie express(), dit toevoegen aan var app & later settings aan toevoegen.
+const cors = require('cors');
+
+app.use(cors());
 app.use(express.json())
 
 console.log("API is up and running, YIPEEE");
