@@ -6,8 +6,11 @@
     import { onMounted, ref } from 'vue';
 
     import RegisterWindow from '../components/Register.vue';
+    import LoginWindow from '../components/Login.vue';
 
     const showRegister = ref(false);
+
+    const showLogin = ref(false);
 </script>
 
 <!--
@@ -24,6 +27,10 @@
         TEXT TEXT TEXT
     </p>
     <br>
+    <p>Login to your account!</p>
+    <button @click="showLogin = true">Login</button>
+    <br>
+    <br>
     <p>Create a new account!</p>
     <button @click="showRegister = true">Register</button>
 
@@ -31,5 +38,11 @@
       v-if="showRegister"
       @close="showRegister = false"
       @login="handleRegister"
+    />
+
+    <LoginWindow
+      v-if="showLogin"
+      @close="showLogin = false"
+      @login="handleLogin"
     />
 </template>

@@ -12,7 +12,7 @@ const fs = require('fs');
 const webhookurl = "https://hook.eu2.make.com/3t5t789bdva3klse14hnoowdry02q4yz";
 
 // --------------------------------------------
-// [GET] users (LOGIN PAGE)
+// [POST] users (LOGIN PAGE)
 // return userID
 // where gmail, password
 //
@@ -20,7 +20,7 @@ const webhookurl = "https://hook.eu2.make.com/3t5t789bdva3klse14hnoowdry02q4yz";
 // (OPTIONAL: CREATE TOKEN. JWT)
 // --------------------------------------------
 
-router.get('/', async(req, res) => { //Async = Wacht op antwoord op database
+router.post('/', async(req, res) => { //Async = Wacht op antwoord op database
   const usersGmail = req.body.UG;
   const usersPassword = req.body.UP;
 
@@ -32,12 +32,12 @@ router.get('/', async(req, res) => { //Async = Wacht op antwoord op database
 
   if(userexist.length === 0){ // Gmail not found = failed login attempt
     res.json({
-      "status": "not found in database"
+      "error": "not found in database"
     });
   }
   else if(userexist[0].permission == 3){ // Permission 3 means banned. This power is only trusted to admins.
     res.json({
-      "status": "Invalid permission status"
+      "error": "Invalid permission status"
     });
   }
   else{
@@ -51,7 +51,7 @@ router.get('/', async(req, res) => { //Async = Wacht op antwoord op database
     }
     else{
       res.json({
-        "status": "Invalid password"
+        "error": "Invalid password"
       });
     }
   }
@@ -63,7 +63,7 @@ router.get('/', async(req, res) => { //Async = Wacht op antwoord op database
 // Gmail notification. Send welcome email (+ validate gmail address I suppose?)
 // --------------------------------------------
 
-router.post('/', async(req, res) => { 
+router.post('/register', async(req, res) => { 
   const usersName = req.body.UN;
   const usersGmail = req.body.UG;
   const usersPassword = req.body.UP; // Get all data from textboxes

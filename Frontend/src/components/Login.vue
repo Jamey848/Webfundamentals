@@ -4,53 +4,48 @@
 <script setup>
     // ------------ Import
     import{ ref, onMounted, provide } from "vue"; // Automatic refresh of value.
+    import { currentUserID } from "../sessiondata/sessionID"
 
-    const emit = defineEmits(['close', 'register']) // defineEmits = Vue3 API. Declare a function to be "emitted" (send) to the parent page. The parent page can listen to these functions.
+    const emit = defineEmits(['close', 'login']) // defineEmits = Vue3 API. Declare a function to be "emitted" (send) to the parent page. The parent page can listen to these functions.
 
-    const username = ref('');
+    //Data
     const email = ref('');
     const password = ref('');
 
     const message = ref('');
 
-    function close(){
-        emit('close')
-    }
-
-    async function logcheck(){
-        const namevalue = username.value;
-        const emailvalue = email.value;
-        const passwordvalue = password.value;
-
-        const res = await fetch("http://localhost:3000/users/register", {
+    async function checklogin(){
+        const checkdata = await fetch("http://localhost:3000/users", {
             method: "POST",
             headers:{
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                UN: namevalue,
-                UG: emailvalue,
-                UP: passwordvalue
+                UG: email.value,
+                UP: password.value
             })
         })
-        
-        const data = await res.json();
+
+        const data = await checkdata.json();
 
         if(data.error){
             message.value = data.error
         }
         else{
-            message.value = "New account has been created!"
+            message.value = "Login succesfull!"
 
-            username.value = "";
             email.value = "";
             password.value = "";
 
             currentUserID.value = data[0].usersID;
             localStorage.setItem('currentUserID', data[0].usersID)
-            console.log(currentUserID.value)
         }
     }
+
+    function close(){
+        emit('close')
+    }
+
 </script>
 
 <!--
@@ -60,7 +55,7 @@
 <template>
     <div class="overlay" @click.self="close">
         <div class="window">
-            <h2 style="text-align:center">Create a new Account</h2>
+            <h2 style="text-align:center">Login to your account</h2>
 
             <div class="profile-pic">
                 <img style="width:200px; height:200px; display:block; margin: 0 auto" src="@/assets/defaultpfp.png" alt="Profile" />
@@ -68,12 +63,6 @@
 
             <form @submit.prevent="submit">
                 
-                <label>Username</label><br>
-                <input v-model="username" type="username" size="40" required />
-                
-                <br>
-                <br>
-
                 <label>Email</label><br>
                 <input v-model="email" type="email" size="40" required />
                 
@@ -84,7 +73,7 @@
 
                 <br>
                 <br>
-                <button type="button" @click="logcheck">Create account</button>
+                <button type="button" @click="checklogin">Login</button>
 
                 <br>
                 <br>
@@ -112,7 +101,7 @@
   padding: 20px;
   border-radius: 8px;
   width: 300px;
-  height: 500px;
+  height: 450px;
   position: relative;
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
