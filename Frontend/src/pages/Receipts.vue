@@ -8,6 +8,7 @@
 
     const timeSelection = ref("week");   // default selected
     const futureSelection = ref("past");
+    const CU_ID = currentUserID;
 
     const groupedReceipts = ref({});
 
@@ -17,7 +18,7 @@
     const totalprice = ref('');
 
     async function receiptData(){
-      console.log(futureSelection.value);
+      console.log(CU_ID);
         const receiptdata = await fetch("http://localhost:3000/receipt/data", {
             method: "POST",
             headers:{
@@ -45,6 +46,16 @@
         }, {});
     }
 
+    async function deleteReceipt(receiptID){
+      const deletedReceipt = await fetch("http://localhost:3000/receipt/" + receiptID, {
+          method: "DELETE"
+      });
+      const checkdelete = await deletedReceipt.json();
+      console.log(checkdelete);
+
+      await receiptData();
+    }
+
     function updateTime(selectedTime){
       if(futureSelection.value == "past"){
         return 0;
@@ -70,10 +81,12 @@
         <h3 class="date-header">{{ date }}</h3>
             
           <!-- RECEIPT CARDS  => EXPLAIN HOW LIST ITEMS ARE LISTED-->
-        <div class="receipt-card" v-for="receipt in items" :key="receipt.receiptID">
+        <div class="receipt-card" :class="{ 'future-error': receipt.futurepurchase && new Date(receipt.receiptdate) < new Date() }" v-for="receipt in items" :key="receipt.receiptID">
           <div class="receipt-name">
               {{ receipt.receiptname ?? 'Nameless Receipt' }} <!-- ?? = If null or empty = default to this given value-->
           </div>
+          <img @click="deleteReceipt(receipt.receiptID)" src="@/assets/trash.png" style="width:20px; height:20px; cursor:pointer" alt="Delete" class="trash-icon"/>
+          <img v-if="receipt.futurepurchase === 1" src="@/assets/Check.png" style="width:20px; height:20px; margin-left: 5px; cursor:pointer"/>
         </div>
       </div>
   </div>
@@ -198,7 +211,9 @@
 }
 
 .receipt-card {
+  display:flex;
   background: white;
+  gap:20px;
   padding: 12px 16px;
   border-radius: 8px;
   margin-bottom: 10px;
@@ -214,6 +229,11 @@
 .receipt-name {
   font-weight: bold;
   margin-bottom: 6px;
+}
+
+.future-error {
+  background-color: #ffdddd; /* light red background */
+  border-left: 4px solid #ff0000; /* optional: red stripe for emphasis */
 }
 /* RECEIPT LIST STYLE */
 
