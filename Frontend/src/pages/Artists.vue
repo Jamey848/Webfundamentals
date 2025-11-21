@@ -5,13 +5,13 @@
     // Imports
     import { onMounted, ref } from 'vue';
 
-    onMounted(() => {
+    /*onMounted(() => {
         fetch("http://localhost:3000/artists")
         .then((res) => res.json())
         .then((data) => {
             artists.value = data;
         });
-    });
+    });*/
 
     // Data (ref)
     let artists = ref([]);

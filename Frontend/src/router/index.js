@@ -4,7 +4,7 @@ import {createRouter, createWebHistory } from 'vue-router';
 import Home from "@/pages/Home.vue";
 import Artists from "@/pages/Artists.vue";
 import Ranking from "@/pages/Ranking.vue";
-import Songs from "@/pages/Songs.vue";
+import Receipts from "@/pages/Receipts.vue";
 import Voting from "@/Pages/Voting.vue";
 
 
@@ -15,9 +15,9 @@ const routes = [
         component: Home
     },
     {
-        path: '/songs',
-        name:'songs',
-        component: Songs
+        path: '/receipts',
+        name:'receipts',
+        component: Receipts
     },
     {
         path: '/artists',

@@ -1,4 +1,16 @@
 <script setup>
+  import { currentUserID } from "./sessiondata/sessionID"
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter()
+
+  function gotoReceipts() {
+    if (currentUserID.value) {
+      router.push('/receipts')
+    } else {
+      alert("You must log in first!")
+    }
+  }
 </script>
 
 <template>
@@ -7,8 +19,9 @@
       <router-link to="/">Home</router-link>
       <router-link to="/artists">Artists</router-link>
       <router-link to="/ranking">Ranking</router-link>
-      <router-link to="/songs">Songs</router-link>
+      <router-link to="/receipts">Receipts</router-link>
       <router-link to="/voting">Voting</router-link>
+      <button @click="gotoReceipts">Receipts</button>
     </nav>
 
     <!-- This renders your pages -->

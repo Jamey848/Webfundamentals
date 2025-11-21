@@ -19,7 +19,7 @@ const { startOfWeek, startOfMonth, startOfYear, format } = require('date-fns');
 
 // IMPORTANT TO-DO: REPLACE usersID WITH ACTUAL ID OF LOGGED IN USER
 
-router.get('/', async(req, res) => {
+router.post('/data', async(req, res) => {
 
   // Shoppingnode data filtered by date (HOLY CRAP I HATE DATE AND TIME IN JAVASCRIPT)
   let timefilter = req.body.timefilter;

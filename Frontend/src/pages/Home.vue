@@ -7,10 +7,15 @@
 
     import RegisterWindow from '../components/Register.vue';
     import LoginWindow from '../components/Login.vue';
+    import { currentUserID } from '@/sessiondata/sessionID';
 
     const showRegister = ref(false);
 
     const showLogin = ref(false);
+
+    function RestID(){
+        currentUserID.value = null;
+    }
 </script>
 
 <!--
@@ -33,6 +38,9 @@
     <br>
     <p>Create a new account!</p>
     <button @click="showRegister = true">Register</button>
+    <br>
+    <br>
+    <button @click="RestID">reset it!</button>
 
     <RegisterWindow
       v-if="showRegister"
