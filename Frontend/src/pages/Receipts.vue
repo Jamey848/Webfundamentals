@@ -6,20 +6,9 @@
     import { ref } from "vue";
     import { currentUserID } from '@/sessiondata/sessionID';
 
-    const categories = ref([
-    {
-        name: "Time",
-        items: ["Week", "Month", "Year"],
-        selected: []
-    },
-    {
-        name: "Future",
-        items: ["Past", "Future"],
-        selected: []
-    }]);
+    const timeSelection = ref("week");   // default selected
+    const futureSelection = ref("past");
 
-    const timefilter = ref('year');
-    const futurepurchase = ref('0');
     const groupedReceipts = ref({});
 
     const receipts = ref([]);
@@ -28,6 +17,7 @@
     const totalprice = ref('');
 
     async function receiptData(){
+      console.log(futureSelection.value);
         const receiptdata = await fetch("http://localhost:3000/receipt/data", {
             method: "POST",
             headers:{
@@ -35,24 +25,33 @@
             },
             body: JSON.stringify({
                 userID: 1,
-                timefilter: timefilter.value,
-                futurepurchase: 0
+                timefilter: timeSelection.value,
+                futurepurchase: updateTime(timeSelection)
             })
         })
 
         const data = await receiptdata.json();
-        receipts.value = data.nodes;
-        console.log(data);
 
-        groupedReceipts.value = receipts.value.reduce((acc, r) => {
-            const date = new Date(r.receiptdate).toLocaleDateString();
-            if (!acc[date]) acc[date] = [];
-            acc[date].push(r);
-            return acc;
+        shopcount.value = data.count[0].shoppingcount; // => KNOW YOUR DATA STRUCTURE
+        totalprice.value = data.total[0].totalprice;
+        store.value = data.store[0].storename;
+        receipts.value = data.nodes;
+
+        groupedReceipts.value = receipts.value.reduce((acc, r) => { // => value.reduce(acc, r) = Accumulator: the thing you're currently building. Default value initialized as {}. r: receiptvalues, go through all receipts
+            const date = new Date(r.receiptdate).toLocaleDateString(); // toLocalDateString(), because r.receiptdate is like xxxx/xx/xxT00:00:00. Javascript always makes it datetime; we don't like datetime
+            if (!acc[date]) acc[date] = []; // => IF what you already have for dates is not yet in the collection (aka; you have a new date for receipts); then add this date so that receipts with the same dates will be grouped correctly.
+            acc[date].push(r); // Push the receipt to the correct group
+            return acc; // GROUPED BY DATE! YIPEE!!
         }, {});
     }
-    function selectItem(category, item) {
-        category.selected = item; // override previous selection
+
+    function updateTime(selectedTime){
+      if(futureSelection.value == "past"){
+        return 0;
+      }
+      else{
+        return 1;
+      }
     }
 </script>
 
@@ -64,64 +63,53 @@
   <div class="receipt-container">
   
     <!-- CURRENT TIME FILTER -->
-    <h2 class="filter-title">{{ timefilter }}</h2>
+    <h2 class="filter-title">{{ timeSelection }}</h2>
 
-    <!-- DATE GROUPS -->
-        <div 
-            class="date-group" 
-            v-for="(items, date) in groupedReceipts" 
-            :key="date"
-        >
-            <h3 class="date-header">{{ date }}</h3>
-
-            <!-- RECEIPT CARDS -->
-            <div 
-            class="receipt-card"
-            v-for="receipt in items"
-            :key="receipt.receiptID"
-            >
-            <div class="receipt-name">
-                {{ receipt.receiptname ?? 'Nameless Receipt' }}
-            </div>
-
-            </div>
-
+    <!-- DATE GROUPS   => EXPLAIN HOW v-for WORKS -->
+      <div class="date-group" v-for="(items, date) in groupedReceipts" :key="date">
+        <h3 class="date-header">{{ date }}</h3>
+            
+          <!-- RECEIPT CARDS  => EXPLAIN HOW LIST ITEMS ARE LISTED-->
+        <div class="receipt-card" v-for="receipt in items" :key="receipt.receiptID">
+          <div class="receipt-name">
+              {{ receipt.receiptname ?? 'Nameless Receipt' }} <!-- ?? = If null or empty = default to this given value-->
+          </div>
         </div>
-    </div>
+      </div>
+  </div>
 
 
 <div class="right-content">
-  <div v-for="(cat, idx) in categories" :key="idx" class="listbox"> <!-- Loop through all predefined category names -->
-    <h3>{{ cat.name }}</h3> <!-- Init categoryname as H3 for each div item -->
+  <div class="listbox">
+    <h3>Time</h3>
+    <label>
+      <input type="radio" v-model="timeSelection" value="week" /> Week
+    </label>
+    <label>
+      <input type="radio" v-model="timeSelection" value="month" /> Month
+    </label>
+    <label>
+      <input type="radio" v-model="timeSelection" value="year" /> Year
+    </label>
+  </div>
 
-    <div class="items">
-      <label
-        v-for="item in cat.items"
-        :key="item"
-        class="checkbox-item"
-      >
-      <!--
-        v-for="item in cat.items". cat has "items" (week, month, ...). Each item is initialized as a label containing text + checkbox
-      -->
-        <!-- checkbox that behaves like a radio -->
-        <input
-          type="checkbox"
-          :checked="cat.selected === item"
-          @change="selectItem(cat, item)"
-        />
-        <!--
-            checked=selected item becomes checked
-            if not selected: trigger function that makes new item selected
-        -->
-        {{ item }}
-      </label>
-    </div>
+  <div class="listbox">
+    <h3>Future</h3>
+    <label>
+      <input type="radio" v-model="futureSelection" value="past" /> Past
+    </label>
+    <label>
+      <input type="radio" v-model="futureSelection" value="future" /> Future
+    </label>
   </div>
   <div style="margin-left:480px;">
     <button class="button-style" @click="receiptData">Check It Out!</button>
   </div>
-  <div>
-    Hello where am I?
+  <div class="summary-box">
+    <h2>Summary</h2>
+    <p v-if="shopcount">Amount of shoppingtrips: {{shopcount}}</p>
+    <p v-if="totalprice">Total amount spent: {{totalprice}}</p>
+    <p v-if="store">Most visited store: {{store}}</p>
   </div>
 </div>
 </div>
@@ -164,6 +152,12 @@
   border-radius:6px;
   cursor:pointer;
   font-size:14px;
+}
+
+.summary-box{
+  position:relative;
+  margin-left:200px;
+  font-size:20px;
 }
 
 

@@ -29,41 +29,82 @@ router.post('/data', async(req, res) => {
   let startdate = format(findstartdate(timefilter), "yyyy-MM-dd");
   let enddate = format(new Date(), "yyyy-MM-dd");
   
-  let receipts = await prisma.$queryRaw`SELECT * FROM receipt 
-  WHERE receipt.usersID = ${userID}
-  AND 
-    (${futurepurchase} = 1 AND receipt.futurepurchase = 1)
-    OR (${futurepurchase} = 0
-    AND receiptdate BETWEEN ${startdate} AND ${enddate})`;
+  let receipts;
+  if(futurepurchase === 1){
+    receipts = await prisma.$queryRaw`
+    SELECT * FROM receipt 
+    WHERE receipt.usersID = ${userID} 
+    AND receipt.futurepurchase = 1`
+  }
+  else{
+    receipts = await prisma.$queryRaw`
+    SELECT * FROM receipt 
+    WHERE receipt.usersID = ${userID} 
+    AND receiptdate BETWEEN ${startdate} AND ${enddate}`
+  }
 
   // Find total amount spend (from receipts linked to shoppingnode)
-  let totalspend = await prisma.$queryRaw`SELECT SUM(price) AS totalprice FROM receiptitems as RI
-  INNER JOIN receipt as RE on RI.receiptID = RI.receiptID
-  WHERE RE.usersID = ${userID}
-  AND 
-    (${futurepurchase} = 1 AND RE.futurepurchase = 1)
-    OR (${futurepurchase} = 0
-    AND RE.receiptdate BETWEEN ${startdate} AND ${enddate})`;
+  let totalspend;
+  if(futurepurchase === 1){
+    totalspend = await prisma.$queryRaw`
+    SELECT SUM(RI.price) AS totalprice 
+    FROM receiptitems AS RI
+    INNER JOIN receipt AS RE ON RI.receiptID = RE.receiptID
+    WHERE RE.usersID = ${userID}
+    AND RE.futurepurchase = 1`;
+  } 
+  else{
+    totalspend = await prisma.$queryRaw`
+    SELECT SUM(RI.price) AS totalprice 
+    FROM receiptitems AS RI
+    INNER JOIN receipt AS RE ON RI.receiptID = RE.receiptID
+    WHERE RE.usersID = ${userID}
+    AND RE.receiptdate BETWEEN ${startdate} AND ${enddate}`;
+  }
 
   // Count # shopping trips
-  let countshoppingtrips = await prisma.$queryRaw`SELECT CAST(COUNT(*) AS CHAR) AS shoppingcount FROM receipt 
-  WHERE receipt.usersID = ${userID}
-  AND 
-    (${futurepurchase} = 1 AND receipt.futurepurchase = 1)
-    OR (${futurepurchase} = 0
-    AND receiptdate BETWEEN ${startdate} AND ${enddate})`;
+  let countshoppingtrips;
+  if(futurepurchase === 1){
+    countshoppingtrips = await prisma.$queryRaw`
+    SELECT CAST(COUNT(*) AS CHAR) AS shoppingcount 
+    FROM receipt 
+    WHERE receipt.usersID = ${userID}
+    AND receipt.futurepurchase = 1`;
+  }
+  else{
+    countshoppingtrips = await prisma.$queryRaw`
+    SELECT CAST(COUNT(*) AS CHAR) AS shoppingcount 
+    FROM receipt 
+    WHERE receipt.usersID = ${userID}
+    AND receipt.receiptdate BETWEEN ${startdate} AND ${enddate}`;
+  }
 
   // res.json({total: Number(countshoppingtrips[0]["COUNT(*)"])}); Yeah because it's a bigint for some reason
   // Most visted store
   
-  let mostvisitedstore = await prisma.$queryRaw`SELECT ST.storename, CAST(COUNT(ST.storeID) AS CHAR) AS storecount FROM store as ST
-  INNER JOIN receipt as RE ON ST.storeID = RE.storeID
-  WHERE RE.usersID = ${userID} 
-  AND 
-    (${futurepurchase} = 1 AND RE.futurepurchase = 1)
-    OR (${futurepurchase} = 0
-    AND RE.receiptdate BETWEEN ${startdate} AND ${enddate})
-  GROUP BY ST.storeID ORDER BY COUNT(ST.storeID) desc LIMIT 1;`;
+  let mostvisitedstore;
+  if(futurepurchase === 1){
+    mostvisitedstore = await prisma.$queryRaw`
+    SELECT ST.storename, CAST(COUNT(ST.storeID) AS CHAR) AS storecount 
+    FROM store AS ST
+    INNER JOIN receipt AS RE ON ST.storeID = RE.storeID
+    WHERE RE.usersID = ${userID}
+    AND RE.futurepurchase = 1
+    GROUP BY ST.storeID
+    ORDER BY COUNT(ST.storeID) DESC
+    LIMIT 1`;
+  }
+  else{
+    mostvisitedstore = await prisma.$queryRaw`
+    SELECT ST.storename, CAST(COUNT(ST.storeID) AS CHAR) AS storecount 
+    FROM store AS ST
+    INNER JOIN receipt AS RE ON ST.storeID = RE.storeID
+    WHERE RE.usersID = ${userID}
+    AND RE.receiptdate BETWEEN ${startdate} AND ${enddate}
+    GROUP BY ST.storeID
+    ORDER BY COUNT(ST.storeID) DESC
+    LIMIT 1`;
+  }
 
   res.json({
     nodes: receipts,
