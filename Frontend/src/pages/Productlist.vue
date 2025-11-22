@@ -10,6 +10,6 @@
 --->
 <template>
     <h1>
-        Voting
+        Productlist
     </h1>
 </template>

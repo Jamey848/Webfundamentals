@@ -152,6 +152,20 @@ router.delete('/:id', async(req, res) => {
   res.json(deletedNode);
 })
 
+// UPDATE RECEIPT => Register it as a past purchase!
+router.put('/:id', async(req, res) => {
+  let updateReceipt = await prisma.receipt.update({
+    where:{
+      receiptID: parseInt(req.params.id)
+    },
+    data:{
+      futurepurchase: false
+    }
+  })
+
+  res.json(updateReceipt)
+})
+
 function findstartdate(dmy){
   const today = new Date();
   if(dmy == "week"){

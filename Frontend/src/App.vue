@@ -11,6 +11,14 @@
       alert("You must log in first!")
     }
   }
+
+  /*function gotoProductlist() {
+    if (currentUserID.value) {
+      router.push('/productlist')
+    } else {
+      alert("You must log in first!")
+    }
+  }*/
 </script>
 
 <template>
@@ -20,7 +28,7 @@
       <router-link to="/artists">Artists</router-link>
       <router-link to="/ranking">Ranking</router-link>
       <router-link to="/receipts">Receipts</router-link>
-      <router-link to="/voting">Voting</router-link>
+      <!--<button @click="gotoProductlist" to="/productlist">Productlist</button>-->
       <button @click="gotoReceipts">Receipts</button>
     </nav>
 

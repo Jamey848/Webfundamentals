@@ -5,7 +5,7 @@ import Home from "@/pages/Home.vue";
 import Artists from "@/pages/Artists.vue";
 import Ranking from "@/pages/Ranking.vue";
 import Receipts from "@/pages/Receipts.vue";
-import Voting from "@/Pages/Voting.vue";
+import Productlist from "@/Pages/Productlist.vue";
 
 
 const routes = [
@@ -25,9 +25,9 @@ const routes = [
         component: Artists
     },
     {
-        path: '/voting',
-        name:'voting',
-        component: Voting
+        path: '/productlist',
+        name:'productlist',
+        component: Productlist
     },
     {
         path: '/ranking',

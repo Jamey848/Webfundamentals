@@ -56,6 +56,16 @@
       await receiptData();
     }
 
+    async function pastReceipt(receiptID){
+      const updateReceipt = await fetch("http://localhost:3000/receipt/" + receiptID, {
+          method: "PUT"
+      });
+      const checkupdate = await updateReceipt.json();
+      console.log(checkupdate);
+
+      await receiptData();
+    }
+
     function updateTime(selectedTime){
       if(futureSelection.value == "past"){
         return 0;
@@ -63,6 +73,9 @@
       else{
         return 1;
       }
+    }
+    function seeID(receiptID){
+      alert("This is the selected ID: " + receiptID);
     }
 </script>
 
@@ -81,50 +94,52 @@
         <h3 class="date-header">{{ date }}</h3>
             
           <!-- RECEIPT CARDS  => EXPLAIN HOW LIST ITEMS ARE LISTED-->
-        <div class="receipt-card" :class="{ 'future-error': receipt.futurepurchase && new Date(receipt.receiptdate) < new Date() }" v-for="receipt in items" :key="receipt.receiptID">
+        <div class="receipt-card" :class="{ 'future-error': receipt.futurepurchase && new Date(receipt.receiptdate) < new Date() }" v-for="receipt in items" :key="receipt.receiptID" @click="seeID(receipt.receiptID)">
           <div class="receipt-name">
               {{ receipt.receiptname ?? 'Nameless Receipt' }} <!-- ?? = If null or empty = default to this given value-->
           </div>
           <img @click="deleteReceipt(receipt.receiptID)" src="@/assets/trash.png" style="width:20px; height:20px; cursor:pointer" alt="Delete" class="trash-icon"/>
-          <img v-if="receipt.futurepurchase === 1" src="@/assets/Check.png" style="width:20px; height:20px; margin-left: 5px; cursor:pointer"/>
+          <img @click="pastReceipt(receipt.receiptID)" v-if="receipt.futurepurchase === 1" src="@/assets/Check.png" style="width:20px; height:20px; margin-left: 5px; cursor:pointer"/>
         </div>
       </div>
   </div>
 
 
-<div class="right-content">
-  <div class="listbox">
-    <h3>Time</h3>
-    <label>
-      <input type="radio" v-model="timeSelection" value="week" /> Week
-    </label>
-    <label>
-      <input type="radio" v-model="timeSelection" value="month" /> Month
-    </label>
-    <label>
-      <input type="radio" v-model="timeSelection" value="year" /> Year
-    </label>
-  </div>
+  <div class="right-content">
+    <br>
+    <h2 style="margin-left:300px">Timefilters</h2>
+    <div class="listbox">
+      <h3>Time</h3>
+      <label>
+        <input type="radio" v-model="timeSelection" value="week" /> Week
+      </label>
+      <label>
+        <input type="radio" v-model="timeSelection" value="month" /> Month
+      </label>
+      <label>
+        <input type="radio" v-model="timeSelection" value="year" /> Year
+      </label>
+    </div>
 
-  <div class="listbox">
-    <h3>Future</h3>
-    <label>
-      <input type="radio" v-model="futureSelection" value="past" /> Past
-    </label>
-    <label>
-      <input type="radio" v-model="futureSelection" value="future" /> Future
-    </label>
+    <div class="listbox">
+      <h3>Future</h3>
+      <label>
+        <input type="radio" v-model="futureSelection" value="past" /> Past
+      </label>
+      <label>
+        <input type="radio" v-model="futureSelection" value="future" /> Future
+      </label>
+    </div>
+    <div style="margin-left:480px;">
+      <button class="button-style" @click="receiptData">Check It Out!</button>
+    </div>
+    <div class="summary-box">
+      <h2>Summary</h2>
+      <p v-if="shopcount">Amount of shoppingtrips: {{shopcount}}</p>
+      <p v-if="totalprice">Total amount spent: {{totalprice}}</p>
+      <p v-if="store">Most visited store: {{store}}</p>
+    </div>
   </div>
-  <div style="margin-left:480px;">
-    <button class="button-style" @click="receiptData">Check It Out!</button>
-  </div>
-  <div class="summary-box">
-    <h2>Summary</h2>
-    <p v-if="shopcount">Amount of shoppingtrips: {{shopcount}}</p>
-    <p v-if="totalprice">Total amount spent: {{totalprice}}</p>
-    <p v-if="store">Most visited store: {{store}}</p>
-  </div>
-</div>
 </div>
 </template>
 
@@ -169,7 +184,7 @@
 
 .summary-box{
   position:relative;
-  margin-left:200px;
+  margin-left:310px;
   font-size:20px;
 }
 
