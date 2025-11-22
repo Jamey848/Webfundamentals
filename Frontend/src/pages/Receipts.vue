@@ -92,10 +92,13 @@
   <div class="receipt-container">
   
     <!-- CURRENT TIME FILTER -->
-    <h2 class="filter-title">{{ timeSelection }}</h2>
+    <div class="title-style">
+      <h2 class="filter-title">{{ timeSelection }}</h2>
+      <img src="@/assets/Add.png" style="width:40px; height:40px; cursor:pointer">
+    </div>
 
     <!-- DATE GROUPS   => EXPLAIN HOW v-for WORKS -->
-      <div class="date-group" v-for="(items, date) in groupedReceipts" :key="date">
+      <div class="date-group" v-for="(items, date) in groupedReceipts" :key="date"> <!-- Strangly in vue; you iterate over value, key in that order. Not in the order of key, value.-->
         <h3 class="date-header">{{ date }}</h3>
             
           <!-- RECEIPT CARDS  => EXPLAIN HOW LIST ITEMS ARE LISTED-->
@@ -108,7 +111,6 @@
         </div>
       </div>
   </div>
-
 
   <div class="right-content">
     <br>
@@ -210,7 +212,13 @@
   color: #333;
   margin-bottom: 20px;
   border-bottom: 2px solid #ddd;
-  padding-bottom: 5px;
+  padding-bottom: 5px;           
+}
+
+.title-style{
+  display: flex;
+  align-items: center;   /* vertically centered */
+  gap: 600px;  
 }
 
 .right-content {

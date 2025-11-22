@@ -6,6 +6,10 @@
     import{ ref, onMounted, provide } from "vue"; // Automatic refresh of value.
     import { currentUserID } from "../sessiondata/sessionID"
 
+    const prop = defineProps({
+        receiptID: String
+    })
+
     const emit = defineEmits(['close', 'login']) // defineEmits = Vue3 API. Declare a function to be "emitted" (send) to the parent page. The parent page can listen to these functions.
     const units = ref([]);
     const categories = ref([]);
@@ -17,28 +21,38 @@
     const unit = ref('');
     const category = ref('');
 
+    const message = ref('');
+
     onMounted(async () => {
         const res = await fetch("http://localhost:3000/receiptitems/categories&units");
         const data = await res.json();
-        console.log(data);
 
         categories.value = data.allcategories;
         units.value = data.allunits;
-
-        console.log(categories.value);
     });
 
     async function addItem(productname, price, quantity, unit, amount, category){
-        /*fetch("http://localhost:3000/receiptitems" + , {
+        const insertItem = await fetch("http://localhost:3000/receiptitems/" + prop.receiptID, {
             method: "POST",
             headers:{
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                name: newArtistName.value
+                ProductName: productname,
+                RIprice: parseFloat(price),
+                RIquantity: parseInt(quantity),
+                RIunit: unit,
+                RIamount: parseFloat(amount),
+                ProductCategory: category
             })
-        })*/
-       console.log(unit);
+        })
+        const data = insertItem.json();
+        if(data.error){
+            message.value = data.error;
+        }
+        else{
+            message.value = "Succesfully added new receiptitem";
+        }
     }
 
     function close(){
@@ -102,6 +116,7 @@
                     </select>
                 </div>
             </div>
+            <p v-bind="message"> {{ message.value }} </p>
             <div class="confirm-button">
                 <button @click="addItem(productname, price, quantity, unit, amount, category)">Confirm</button>
             </div>

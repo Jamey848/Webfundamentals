@@ -7,27 +7,43 @@
     import { useRoute } from 'vue-router';
     import AdditemWindow from '../components/Addreceiptitem.vue';
 
-    const showAdditem = ref(false);
+    const showAdditem = ref(false); // Ref() = 
+    const receiptID = ref('');
 
     const route = useRoute();
     const rItems = ref([]);
     const totalprice = ref('');
 
-    onMounted(() => {
-        const receiptID = route.params.receiptID;
-        if (receiptID) {
-            getReceiptitems(receiptID);
+    onMounted(() => { // onMounted = 
+        const R_ID = route.params.receiptID;
+        if (R_ID) {
+            receiptID.value = R_ID;
+            getReceiptitems(R_ID);
         } else {
             console.warn('No receiptID in route params');
         }
     });
 
+    function closeSubwindow(){
+        showAdditem.value = false;
+        getReceiptitems(receiptID.value); // Refresh the page!
+    }
+
     async function getReceiptitems(receiptID) {
         const res = await fetch(`http://localhost:3000/receiptitems/${receiptID}`);
         const data = await res.json();
         rItems.value = data;
-        totalprice.value = rItems.value.reduce((sum, item) => sum + parseFloat(item.price), 0);
+        totalprice.value = rItems.value.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2);
         //console.log(data);
+    }
+    
+    async function deleteItem(itemID){
+        const delitem = await fetch("http://localhost:3000/receiptitems/" + itemID, {
+            method: "DELETE"
+        });
+        console.log(delitem.json());
+
+        getReceiptitems(receiptID.value);
     }
 </script>
 
@@ -55,7 +71,7 @@
                 <div>{{ item.price }}</div>
                 <div>{{ item.QUA }}</div>
                 <div>{{ item.categoryname }}</div>
-                <div class="trash-icon"><img src="@/assets/trash.png"></div>
+                <div @click="deleteItem(item.receiptitemsID)" class="trash-icon"><img src="@/assets/trash.png"></div>
             </div>
         </div>
         <div class="totalprice-card">
@@ -66,7 +82,8 @@
 
     <AdditemWindow
   v-if="showAdditem"
-  @close="showAdditem = false"/>
+  :receiptID="receiptID"
+  @close="closeSubwindow"/>
 </template>
 
 <style scoped>
