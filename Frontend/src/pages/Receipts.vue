@@ -5,6 +5,9 @@
 <script setup>
     import { ref } from "vue";
     import { currentUserID } from '@/sessiondata/sessionID';
+    import { useRouter } from 'vue-router'
+
+    const router = useRouter();
 
     const timeSelection = ref("week");   // default selected
     const futureSelection = ref("past");
@@ -74,8 +77,10 @@
         return 1;
       }
     }
-    function seeID(receiptID){
-      alert("This is the selected ID: " + receiptID);
+    function gotoReceiptitems(receiptID) {
+      router.push({ 
+      name: 'productlist', 
+      params: { receiptID: receiptID } });
     }
 </script>
 
@@ -94,7 +99,7 @@
         <h3 class="date-header">{{ date }}</h3>
             
           <!-- RECEIPT CARDS  => EXPLAIN HOW LIST ITEMS ARE LISTED-->
-        <div class="receipt-card" :class="{ 'future-error': receipt.futurepurchase && new Date(receipt.receiptdate) < new Date() }" v-for="receipt in items" :key="receipt.receiptID" @click="seeID(receipt.receiptID)">
+        <div class="receipt-card" :class="{ 'future-error': receipt.futurepurchase && new Date(receipt.receiptdate) < new Date() }" v-for="receipt in items" :key="receipt.receiptID" @click="gotoReceiptitems(receipt.receiptID)">
           <div class="receipt-name">
               {{ receipt.receiptname ?? 'Nameless Receipt' }} <!-- ?? = If null or empty = default to this given value-->
           </div>

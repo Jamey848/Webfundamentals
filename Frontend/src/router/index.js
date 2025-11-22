@@ -25,7 +25,7 @@ const routes = [
         component: Artists
     },
     {
-        path: '/productlist',
+        path: '/productlist/:receiptID',
         name:'productlist',
         component: Productlist
     },
