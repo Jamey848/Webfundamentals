@@ -26,7 +26,7 @@
     <nav>
       <router-link to="/">Home</router-link>
       <router-link to="/artists">Artists</router-link>
-      <router-link to="/ranking">Ranking</router-link>
+      <!--<router-link to="/addreceipt">AddReceipt</router-link>-->
       <router-link to="/receipts">Receipts</router-link>
       <!--<button @click="gotoProductlist" to="/productlist">Productlist</button>-->
       <button @click="gotoReceipts">Receipts</button>

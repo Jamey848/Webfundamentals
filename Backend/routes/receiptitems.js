@@ -15,13 +15,15 @@ const { addReceiptItem } = require("../services/addreceiptitem");
 // WHERE SN.shoppingnodeID = RE.shoppingnodeID
 // --------------------------------------------
 
-router.get('/categories&units', async (req, res) => {
+router.get('/permanentValues', async (req, res) => {
   const allcategories = await prisma.category.findMany();
   const allunits = await prisma.unit.findMany();
+  const allstores = await prisma.store.findMany();
 
   res.json({
     allcategories: allcategories,
-    allunits: allunits
+    allunits: allunits,
+    allstores: allstores
   })
 });
 

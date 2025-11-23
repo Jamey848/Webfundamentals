@@ -24,7 +24,7 @@
     const message = ref('');
 
     onMounted(async () => {
-        const res = await fetch("http://localhost:3000/receiptitems/categories&units");
+        const res = await fetch("http://localhost:3000/receiptitems/permanentValues");
         const data = await res.json();
 
         categories.value = data.allcategories;
@@ -46,7 +46,7 @@
                 ProductCategory: category
             })
         })
-        const data = insertItem.json();
+        const data = await insertItem.json();
         if(data.error){
             message.value = data.error;
         }
@@ -116,7 +116,7 @@
                     </select>
                 </div>
             </div>
-            <p v-bind="message"> {{ message.value }} </p>
+            <p> {{ message }} </p>
             <div class="confirm-button">
                 <button @click="addItem(productname, price, quantity, unit, amount, category)">Confirm</button>
             </div>

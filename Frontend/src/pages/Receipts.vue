@@ -21,7 +21,7 @@
     const totalprice = ref('');
 
     async function receiptData(){
-      console.log(CU_ID);
+      //console.log(CU_ID);
         const receiptdata = await fetch("http://localhost:3000/receipt/data", {
             method: "POST",
             headers:{
@@ -77,10 +77,17 @@
         return 1;
       }
     }
+    
     function gotoReceiptitems(receiptID) {
       router.push({ 
       name: 'productlist', 
       params: { receiptID: receiptID } });
+    }
+
+    function addNewReceipt(){
+      router.push({
+        name:"addreceipt"
+      })
     }
 </script>
 
@@ -94,7 +101,7 @@
     <!-- CURRENT TIME FILTER -->
     <div class="title-style">
       <h2 class="filter-title">{{ timeSelection }}</h2>
-      <img src="@/assets/Add.png" style="width:40px; height:40px; cursor:pointer">
+      <img @click="addNewReceipt()" src="@/assets/Add.png" style="width:40px; height:40px; cursor:pointer">
     </div>
 
     <!-- DATE GROUPS   => EXPLAIN HOW v-for WORKS -->
@@ -106,8 +113,8 @@
           <div class="receipt-name">
               {{ receipt.receiptname ?? 'Nameless Receipt' }} <!-- ?? = If null or empty = default to this given value-->
           </div>
-          <img @click="deleteReceipt(receipt.receiptID)" src="@/assets/trash.png" style="width:20px; height:20px; cursor:pointer" alt="Delete" class="trash-icon"/>
-          <img @click="pastReceipt(receipt.receiptID)" v-if="receipt.futurepurchase === 1" src="@/assets/Check.png" style="width:20px; height:20px; margin-left: 5px; cursor:pointer"/>
+          <img @click.stop="deleteReceipt(receipt.receiptID)" src="@/assets/trash.png" style="width:20px; height:20px; cursor:pointer" alt="Delete" class="trash-icon"/>
+          <img @click.stop="pastReceipt(receipt.receiptID)" v-if="receipt.futurepurchase === 1" src="@/assets/Check.png" style="width:20px; height:20px; margin-left: 5px; cursor:pointer"/>
         </div>
       </div>
   </div>
