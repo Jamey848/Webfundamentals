@@ -129,6 +129,21 @@
         }
     }
 
+    async function deleteItem(itemID){
+        const delitem = await fetch("http://localhost:3000/receiptitems/" + itemID, {
+            method: "DELETE"
+        });
+        console.log(delitem.json());
+
+        removeItemByID(itemID);
+    }
+
+    function removeItemByID(receiptitemID) {
+        itemList.value = itemList.value.filter(
+            ([_, id]) => id !== receiptitemID
+        );
+    }
+
 </script>
 
 <!--
@@ -196,6 +211,7 @@
             <h2>Receiptitems</h2>
             <div v-for="([stringItem, receiptitemID]) in itemList" :key="receiptitemID" class="grid-item">
                 {{ stringItem }}
+                <img @click="deleteItem(receiptitemID)" src="@/assets/trash.png" style="width:20px; height:20px; position:relative; top:3px; cursor:pointer">
             </div>
         </div>
     </div>
