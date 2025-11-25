@@ -25,6 +25,8 @@
     const unit = ref('');
     const category = ref('');
 
+    const itemList = ref([]);
+
     const Rmessage = ref('');
     const RImessage = ref('');
 
@@ -89,28 +91,41 @@
             RImessage.value = "Missing values. Please fill in all textboxes";
         }
         else{
-            console.log(insertedID.value, productname.value, price.value, unit.value, quantity.value, amount.value, category.value);
-            /*const insertItem = await fetch("http://localhost:3000/receiptitems/" + insertedID, {
+            RImessage.value = "";
+            console.log(insertedID.value, productname.value, parseFloat(price.value), unit.value, quantity.value, amount.value, category.value);
+            const insertItem = await fetch("http://localhost:3000/receiptitems/" + insertedID.value, {
                 method: "POST",
                 headers:{
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    ProductName: productname,
-                    RIprice: parseFloat(price),
-                    RIquantity: parseInt(quantity),
-                    RIunit: unit,
-                    RIamount: parseFloat(amount),
-                    ProductCategory: category
+                    ProductName: productname.value,
+                    RIprice: parseFloat(price.value),
+                    RIquantity: parseInt(quantity.value),
+                    RIunit: unit.value,
+                    RIamount: parseFloat(amount.value),
+                    ProductCategory: category.value
                 })
             })
             const data = await insertItem.json();
             if(data.error){
-                message.value = data.error;
+                RImessage.value = data.error;
             }
             else{
-                message.value = "Succesfully added new receiptitem";
-            }*/
+                RImessage.value = "Succesfully added new receiptitem";
+
+                const displayString = `${productname.value} x ${quantity.value} | €${parseFloat(amount.value)}`;
+                itemList.value.push([displayString, data.receiptitemsID]);
+
+                console.log(data.receiptitemsID);
+
+                productname.value = "";
+                category.value = "";
+                price.value = "";
+                quantity.value = "";
+                amount.value = "";
+                unit.value = "";
+            }
         }
     }
 
@@ -150,7 +165,7 @@
             </div>
             <div class="receipt-textbox">
                 <label>Price</label>
-                <input type="date" v-model="price">
+                <input v-model="price" style="width:70px">
             </div>
             <div class="receipt-textbox">
                 <label>Quantity</label>
@@ -179,8 +194,8 @@
         </div>
         <div class="grid-container">
             <h2>Receiptitems</h2>
-            <div class="grid-item">
-                
+            <div v-for="([stringItem, receiptitemID]) in itemList" :key="receiptitemID" class="grid-item">
+                {{ stringItem }}
             </div>
         </div>
     </div>

@@ -1,4 +1,4 @@
-const {PrismaClient} = require('../generated/prisma');
+const {PrismaClient, Decimal} = require('../generated/prisma');
 const prisma = new PrismaClient();
 
 async function addReceiptItem(itemData, res) {
@@ -32,7 +32,7 @@ async function addReceiptItem(itemData, res) {
       itemdata = {
         productID: parseInt(prcheck),
         unitID: parseInt(unID),
-        price: RIprice,
+        price: parseFloat(RIprice),
         quantity: RIquantity,
         amount: RIamount,
         receiptID: parseInt(ReceiptID)
