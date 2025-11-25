@@ -6,6 +6,7 @@ import Artists from "@/pages/Artists.vue";
 import AddReceipt from "@/pages/AddReceipt.vue";
 import Receipts from "@/pages/Receipts.vue";
 import Productlist from "@/Pages/Productlist.vue";
+import Metrics from "@/pages/Metrics.vue";
 
 
 const routes = [
@@ -33,6 +34,11 @@ const routes = [
         path: '/addreceipt',
         name:'addreceipt',
         component: AddReceipt
+    },
+    {
+        path: '/metrics',
+        name: 'metrics',
+        component: Metrics
     }
 ];
 

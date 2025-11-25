@@ -44,7 +44,7 @@ router.get('/', async(req, res) => {
   });
 })
 
-router.get('/graph', async(req, res) => {
+router.post('/graph', async(req, res) => {
   let CategoryName = req.body.CategoryName;
   let TimeFilter = req.body.TimeFilter;
   let userID = req.body.userID;

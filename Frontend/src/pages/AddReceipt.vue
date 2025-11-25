@@ -6,6 +6,8 @@
     import { currentUserID } from "../sessiondata/sessionID"
     import{ ref, onMounted, provide } from "vue";
 
+    //import {VueApexCharts} from "vue3-apexcharts";
+
     const CU_ID = currentUserID.value;
 
     const storelist = ref([]);

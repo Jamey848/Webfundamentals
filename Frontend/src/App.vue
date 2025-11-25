@@ -11,6 +11,13 @@
       alert("You must log in first!")
     }
   }
+  function gotoMetrics() {
+    if (currentUserID.value) {
+      router.push('/metrics')
+    } else {
+      alert("You must log in first!")
+    }
+  }
 
   /*function gotoProductlist() {
     if (currentUserID.value) {
@@ -30,6 +37,7 @@
       <router-link to="/receipts">Receipts</router-link>
       <!--<button @click="gotoProductlist" to="/productlist">Productlist</button>-->
       <button @click="gotoReceipts">Receipts</button>
+      <button @click="gotoMetrics">Metrics</button>
     </nav>
 
     <!-- This renders your pages -->
