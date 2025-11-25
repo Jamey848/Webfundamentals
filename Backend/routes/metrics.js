@@ -14,7 +14,7 @@ const { startOfWeek, startOfMonth, startOfYear, format } = require('date-fns');
 //RETURN Generalmetrics, CategoryRatios and Data Visualization
 //--------------------------------
 
-router.get('/', async(req, res) => {
+router.post('/', async(req, res) => {
   let userID = req.body.userID;
 
   let Generalmetrics = await prisma.$queryRaw`SELECT SUM(price) as TotalSum, ROUND(AVG(price), 2) as AverageSum

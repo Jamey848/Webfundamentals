@@ -1,64 +1,84 @@
 <script setup>
-import ApexCharts from "vue3-apexcharts";
-import { ref, onMounted } from "vue";
+    import ApexCharts from "vue3-apexcharts";
+    import { ref, onMounted } from "vue";
 
-const dates = ref([]);
-const prices = ref([]);
+    const dates = ref([]);
+    const prices = ref([]);
 
-const categorylist = ref([]);
+    const generalmetrics = ref([]);
+    const ratios = ref([]);
+    const topthree = ref([]);
 
-const category = ref('');
-const timefilter = ref('');
+    const categorylist = ref([]);
 
-const chartOptions = ref({
-  chart: {
-    id: "price-line-chart",
-    toolbar: { show: true } // allows download as PNG
-  },
-  xaxis: {
-    categories: [] // start empty
-  },
-  stroke: { curve: "smooth" },
-  title: { text: "Total Price per Date" },
-  yaxis: {
-    title: { text: "Price (€)" }
-  }
-});
+    const category = ref('');
+    const timefilter = ref('');
 
-const series = ref([
-  { name: "Total Price", data: [] } // start empty
-]);
+    const chartOptions = ref({
+    chart: {
+        id: "price-line-chart",
+        toolbar: { show: true } // allows download as PNG
+    },
+    xaxis: {
+        categories: [] // start empty
+    },
+    stroke: { curve: "smooth" },
+    title: { text: "Total Price per Date" },
+    yaxis: {
+        title: { text: "Price (€)" }
+    }
+    });
 
-onMounted(async () => {
-    const res = await fetch("http://localhost:3000/receiptitems/permanentValues");
-    const data = await res.json();
+    const series = ref([
+    { name: "Total Price", data: [] } // start empty
+    ]);
 
-    categorylist.value = data.allcategories;
-});
+    onMounted(async () => {
+        const res = await fetch("http://localhost:3000/receiptitems/permanentValues");
+        const data = await res.json();
 
-async function getGraph(){
-  const response = await fetch("http://localhost:3000/metrics/graph", {
-    method: "POST",
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      CategoryName: "alcohol",
-      TimeFilter: "year",
-      userID: 1
-    })
-  });
+        const metricsdata = await fetch("http://localhost:3000/metrics", {
+            method: "POST",
+            headers:{
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userID: 1
+            })
+        })
 
-  const data = await response.json();
+        const datametrics = await metricsdata.json();
 
-  // Fill reactive refs
-  dates.value = data.map(item => new Date(item.receiptdate).toLocaleDateString());
-  prices.value = data.map(item => parseFloat(item.Totalprice));
+        console.log(datametrics);
 
-  // Update chartOptions and series dynamically
-  chartOptions.value.xaxis.categories = dates.value;
-  series.value[0].data = prices.value;
+        generalmetrics.value = datametrics.generalmetrics;
+        ratios.value = datametrics.ratios;
+        topthree.value = datametrics.topthree;
+    });
 
-  console.log(dates.value, prices.value);
-};
+    async function getGraph(){
+    const response = await fetch("http://localhost:3000/metrics/graph", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+        CategoryName: category.value,
+        TimeFilter: timefilter.value,
+        userID: 1
+        })
+    });
+
+    const data = await response.json();
+
+    // Fill reactive refs
+    dates.value = data.map(item => new Date(item.receiptdate).toLocaleDateString());
+    prices.value = data.map(item => parseFloat(item.Totalprice));
+
+    // Update chartOptions and series dynamically
+    chartOptions.value.xaxis.categories = dates.value;
+    series.value[0].data = prices.value;
+
+    console.log(dates.value, prices.value);
+    };
 </script>
 
 <template>
@@ -68,7 +88,7 @@ async function getGraph(){
                 <div class="graph-settings">
                     <h3>Category</h3>
                     <select v-model="category">
-                        <option v-for="cat in categorylist" :key="cat.categoryID"> {{ cat.categoryname }} </option>
+                        <option v-for="cat in categorylist" :key="cat.categoryID" :value="cat.categoryname"> {{ cat.categoryname }} </option>
                     </select>
                     <h3>Time</h3>
                     <select v-model="timefilter">
@@ -91,6 +111,25 @@ async function getGraph(){
                 width="700px"
                 height="400px"
                 />
+            </div>
+        </div>
+        <div>
+            <h3>General Metrics</h3>
+            <div class="general-metrics" v-if="generalmetrics.length">
+                <p> {{ generalmetrics[0].TotalSum }} </p>
+                <p> {{ generalmetrics[0].AverageSum }} </p>
+            </div>
+            <div class="top-categories" v-if="ratios.length">
+                <p> {{ ratios[0].categoryname }} </p>
+                <p> {{ ratios[1].categoryname }} </p>
+                <p> {{ ratios[2].categoryname }} </p>
+            </div>
+            <div class="category-ratios" v-if="ratios.Length">
+                <div v-for="(index, ratio) in ratios" :key="index">
+                    
+                </div>
+            </div>
+            <div class="top-three">
             </div>
         </div>
     </div>
