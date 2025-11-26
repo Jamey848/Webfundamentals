@@ -37,6 +37,10 @@
         const res = await fetch("http://localhost:3000/receiptitems/permanentValues");
         const data = await res.json();
 
+        console.log(data);
+
+        categorylist.value = data.allcategories;
+
         const metricsdata = await fetch("http://localhost:3000/metrics", {
             method: "POST",
             headers:{
@@ -49,7 +53,6 @@
 
         const datametrics = await metricsdata.json();
 
-        console.log(datametrics);
 
         generalmetrics.value = datametrics.generalmetrics;
         ratios.value = datametrics.ratios;
@@ -83,56 +86,67 @@
 
 <template>
     <div class="page-layout">
-        <div class="graph-items">
-            <div class="greater-graph-settings">
-                <div class="graph-settings">
-                    <h3>Category</h3>
-                    <select v-model="category">
-                        <option v-for="cat in categorylist" :key="cat.categoryID" :value="cat.categoryname"> {{ cat.categoryname }} </option>
-                    </select>
-                    <h3>Time</h3>
-                    <select v-model="timefilter">
-                        <option value="week">Week</option>
-                        <option value="month">Month</option>
-                        <option value="year">Year</option>
-                    </select>
-                </div>
+        <div class="user-metrics">
+            <h3>General Metrics</h3>
+            <div class="general-metrics" v-if="generalmetrics.length">
+                <p>Your current total: €{{ generalmetrics[0].TotalSum }}</p>
+                <p>Your current average: €{{ generalmetrics[0].AverageSum }}</p>
+            </div>
+
+            <h3>Top 3 categories</h3>
+            <div class="top-categories" v-if="topthree.length">
+                <p>#1. {{ topthree[0].categoryname }}</p>
+                <p>#2. {{ topthree[1].categoryname }}</p>
+                <p>#3. {{ topthree[2].categoryname }}</p>
+            </div>
+
+            <h3>Category Ratios</h3>
+            <div class="category-ratios" v-if="ratios.length">
+                <p v-for="(ratio, index) in ratios" :key="index">
+                    {{ ratio.categoryname }}: {{ ratio.percentage }}
+                </p>
+            </div>
+        </div>
+
+        <div class="greater-graph-settings">
+            <div class="graph-settings">
+                <h3>Category</h3>
+                <select v-model="category">
+                    <option
+                        v-for="cat in categorylist"
+                        :key="cat.categoryID"
+                        :value="cat.categoryname"
+                    >
+                        {{ cat.categoryname }}
+                    </option>
+                </select>
+
+                <h3>Time</h3>
+                <select v-model="timefilter">
+                    <option value="week">Week</option>
+                    <option value="month">Month</option>
+                    <option value="year">Year</option>
+                </select>
+            </div>
+            <div class="annoying-button">
                 <button @click="getGraph()">Visualize</button>
             </div>
-            
+
             <div class="graph">
-                <h2>Test ApexCharts</h2>
-                
+                <h2>ReceiptChart</h2>
+
                 <apexcharts
-                v-if="series[0].data.length"
-                type="line"
-                :options="chartOptions"
-                :series="series"
-                width="700px"
-                height="400px"
+                    v-if="series[0].data.length"
+                    type="line"
+                    :options="chartOptions"
+                    :series="series"
+                    width="900px"
+                    height="400px"
                 />
             </div>
         </div>
-        <div>
-            <h3>General Metrics</h3>
-            <div class="general-metrics" v-if="generalmetrics.length">
-                <p> {{ generalmetrics[0].TotalSum }} </p>
-                <p> {{ generalmetrics[0].AverageSum }} </p>
-            </div>
-            <div class="top-categories" v-if="ratios.length">
-                <p> {{ ratios[0].categoryname }} </p>
-                <p> {{ ratios[1].categoryname }} </p>
-                <p> {{ ratios[2].categoryname }} </p>
-            </div>
-            <div class="category-ratios" v-if="ratios.Length">
-                <div v-for="(index, ratio) in ratios" :key="index">
-                    
-                </div>
-            </div>
-            <div class="top-three">
-            </div>
-        </div>
     </div>
+
 </template>
 
 <script>
@@ -146,10 +160,9 @@ export default {
 <style scoped>
     .page-layout {
         display: flex;
-        justify-content: flex-end;
-        align-items: flex-start;
         gap: 30px;
         padding: 20px;
+        width:100%;
     }
 
     .greater-graph-settings {
@@ -160,38 +173,33 @@ export default {
         background-color: #fafafa;
         border: 1px solid #ddd;
         border-radius: 12px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        width: 500px;
+        width: 950px;
     }
 
     .graph-settings {
         display: flex;
-        flex-direction: row;
         gap: 15px;
-    }
-
-    .graph-settings .col {
-        display: flex;
-        flex-direction: column;
-        flex: 1; /* equal width columns */
+        justify-content: center;
     }
 
     .graph-settings h3 {
-        margin: 0 0 5px 0;
         font-size: 14px;
         font-weight: 600;
     }
 
     .graph-settings select {
-        padding: 6px 10px;
         font-size: 13px;
         border-radius: 6px;
         border: 1px solid #ccc;
-        width: 100%;
-        box-sizing: border-box;
+        width: 200px;
     }
 
-    .greater-graph-settings button {
+    .annoying-button{
+        display: flex;
+        justify-content: center;
+    }
+
+    .annoying-button button {
         padding: 8px 12px;
         font-size: 14px;
         border-radius: 6px;
@@ -199,7 +207,7 @@ export default {
         background-color: #121111;
         color: white;
         cursor: pointer;
-        width: 100%;
+        width: 535px;
     }
 
     .greater-graph-settings button:hover {
@@ -209,11 +217,54 @@ export default {
     /* Right graph panel */
     .graph {
         flex: 1;
+        width:900px;
         padding: 20px;
         background-color: #fff;
         border-radius: 12px;
         border: 1px solid #ddd;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .user-metrics {
+        font-size:18px;
+        width: 400px;
+        padding: 20px;
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .user-metrics h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+    }
+
+    .user-metrics p {
+        margin: 5px 0;
+        color: #444;
+    }
+
+    .category-ratios p {
+        font-size:18px;
+        display: flex;
+        padding: 6px 10px;
+        background: #fafafa;
+        border-radius: 8px;
+        margin-bottom: 6px;
+        width:300px;
+        overflow:auto;
+    }
+
+    .category-ratios p:hover {
+        background: #f0f0f0;
     }
 
 </style>
