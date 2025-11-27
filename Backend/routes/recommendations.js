@@ -7,7 +7,7 @@ const router = express.Router();
 const {PrismaClient} = require('../generated/prisma');
 const prisma = new PrismaClient();
 
-router.get('/', async(req, res) => {
+router.post('/', async(req, res) => {
     let usersID = req.body.usersID;
     let allUserData = await prisma.$queryRaw`SELECT RE.receiptname, RE.receiptdate, ST.storename, PR.productname, CONCAT(RI.amount, ' x ', RI.quantity, UN.unitname) as QUA, SUM(RI.price)
     FROM receipt as RE
@@ -24,12 +24,22 @@ router.get('/', async(req, res) => {
     QUA;;`;
 
     let wisdom = await gptwisdom(JSON.stringify(allUserData));
+    const cleanedText = wisdom.replace(/\*/g, '');
 
-    res.json({
-        "advice": wisdom
+    // 2. Split by newlines and trim each line, removing empty ones
+    const lines = cleanedText
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line);
+    
+    const adviceJSON = {};
+    lines.forEach((line, index) => {
+        adviceJSON[`Line${index + 1}`] = line;
     });
 
-    res.json(allUserData);
+    res.json({
+        "advice": adviceJSON
+    });
 })
 
 async function gptwisdom(userdata){
@@ -46,15 +56,11 @@ async function gptwisdom(userdata){
                 {
                     role: 'user',
                     content: `Given the data below, provide:
-                    - analysis (max 100 words)
-                    - recommendations (max 300 words)
-                    
-                    The structure of your response will be:
-                    @1. Analysis@
-                    /your response/
+                    Recommendations on spending habits (limit your response to 300 words)
 
-                    #2. recommendations#
-                    +your response+
+                    (If you don't have enough data: be transparant about it and try your best)
+                    
+                    Do not use titles in your response.
 
                     Data:
                     ${userdata}`
@@ -67,6 +73,10 @@ async function gptwisdom(userdata){
     try {
         const response = await fetch(url, options);
         const resu = await response.json();
+
+        // Analysis: everything between "1. **Analysis**" and "2. **Recommendations**"
+        
+        //console.log(recommended);
         return resu.result;
     } catch (error) {
         console.error(error);

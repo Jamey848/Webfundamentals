@@ -2,8 +2,8 @@
     import ApexCharts from "vue3-apexcharts";
     import { ref, onMounted } from "vue";
 
-    const dates = ref([]);
-    const prices = ref([]);
+    const dates = ref([]); // => Y-AXIS
+    const prices = ref([]); // => X-AXIS
 
     const generalmetrics = ref([]);
     const ratios = ref([]);
@@ -14,24 +14,25 @@
     const category = ref('');
     const timefilter = ref('');
 
-    const chartOptions = ref({
-    chart: {
-        id: "price-line-chart",
-        toolbar: { show: true } // allows download as PNG
-    },
-    xaxis: {
-        categories: [] // start empty
-    },
-    stroke: { curve: "smooth" },
-    title: { text: "Total Price per Date" },
-    yaxis: {
-        title: { text: "Price (€)" }
-    }
+    const chartOptions = ref({ // Remember this is REACTIVE. xaxis & yaxis are both reactive because they are in refs.
+        chart: {
+            id: "price-line-chart", // => Unique identifier of the chart (usefull if you would be working with multiple charts).
+            toolbar: { show: true } // allow download as PNG
+        },
+        xaxis: {
+            categories: [] // Datalabels of x-axis! [jan, feb, ...]
+                           // Datalabels align with series.data. 
+        },
+        stroke: { curve: "smooth" }, // Makes the line smooootthhh
+        title: { text: "Total Price per Date" },
+        yaxis: {
+            title: { text: "Price (€)" }
+        }
     });
 
     const series = ref([
-    { name: "Total Price", data: [] } // start empty
-    ]);
+        { name: "Total Price", data: [] } // HERE IS THE Y-AXIS VALUE STORED!
+    ]);                                   // Why a seperate ref? Because the data has to be reactive! If your data changes, so must this then also change to create a new chart.
 
     onMounted(async () => {
         const res = await fetch("http://localhost:3000/receiptitems/permanentValues");
@@ -60,27 +61,25 @@
     });
 
     async function getGraph(){
-    const response = await fetch("http://localhost:3000/metrics/graph", {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-        CategoryName: category.value,
-        TimeFilter: timefilter.value,
-        userID: 1
-        })
-    });
+        const response = await fetch("http://localhost:3000/metrics/graph", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                CategoryName: category.value,
+                TimeFilter: timefilter.value,
+                userID: 1
+            })
+        });
 
-    const data = await response.json();
+        const data = await response.json();
 
-    // Fill reactive refs
-    dates.value = data.map(item => new Date(item.receiptdate).toLocaleDateString());
-    prices.value = data.map(item => parseFloat(item.Totalprice));
+        // Fill reactive refs. .map function = loop through all items of json; take properties (and optionally convert them). Result = new array with only those specified items.
+        dates.value = data.map(item => new Date(item.receiptdate).toLocaleDateString()); // => To local datestring, again because javascript by default takes DateTime.
+        prices.value = data.map(item => parseFloat(item.Totalprice));
 
-    // Update chartOptions and series dynamically
-    chartOptions.value.xaxis.categories = dates.value;
-    series.value[0].data = prices.value;
-
-    console.log(dates.value, prices.value);
+        // Update chartOptions and series dynamically
+        chartOptions.value.xaxis.categories = dates.value; // ASSIGN ARRAY OF DATESTRING TO XAXIS
+        series.value[0].data = prices.value; // ASSIGN ARRAY OF PRICES TO YAXIS
     };
 </script>
 
@@ -115,8 +114,7 @@
                     <option
                         v-for="cat in categorylist"
                         :key="cat.categoryID"
-                        :value="cat.categoryname"
-                    >
+                        :value="cat.categoryname">
                         {{ cat.categoryname }}
                     </option>
                 </select>
@@ -134,8 +132,8 @@
 
             <div class="graph">
                 <h2>ReceiptChart</h2>
-
-                <apexcharts
+                <!-- v-if at apexcharts: yes it is possible to not have data to visualize. If you detect it, don't try it then!  -->
+                <ApexCharts
                     v-if="series[0].data.length"
                     type="line"
                     :options="chartOptions"
@@ -148,14 +146,6 @@
     </div>
 
 </template>
-
-<script>
-export default {
-  components: {
-    apexcharts: ApexCharts
-  }
-};
-</script>
 
 <style scoped>
     .page-layout {

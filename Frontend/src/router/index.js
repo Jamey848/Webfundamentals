@@ -7,6 +7,7 @@ import AddReceipt from "@/pages/AddReceipt.vue";
 import Receipts from "@/pages/Receipts.vue";
 import Productlist from "@/Pages/Productlist.vue";
 import Metrics from "@/pages/Metrics.vue";
+import Recommendations from "@/pages/Recommendations.vue"
 
 
 const routes = [
@@ -39,6 +40,11 @@ const routes = [
         path: '/metrics',
         name: 'metrics',
         component: Metrics
+    },
+    {
+        path: '/recommendations',
+        name: 'recommendations',
+        component: Recommendations
     }
 ];
 
