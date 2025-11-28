@@ -7,7 +7,8 @@ import AddReceipt from "@/pages/AddReceipt.vue";
 import Receipts from "@/pages/Receipts.vue";
 import Productlist from "@/Pages/Productlist.vue";
 import Metrics from "@/pages/Metrics.vue";
-import Recommendations from "@/pages/Recommendations.vue"
+import Recommendations from "@/pages/Recommendations.vue";
+import Userdashboard from "@/pages/Userdashboard.vue";
 
 
 const routes = [
@@ -45,6 +46,11 @@ const routes = [
         path: '/recommendations',
         name: 'recommendations',
         component: Recommendations
+    },
+    {
+        path: '/userdashboard',
+        name: 'userdashboard',
+        component: Userdashboard
     }
 ];
 

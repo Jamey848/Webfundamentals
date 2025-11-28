@@ -25,6 +25,13 @@
       alert("You must log in first!")
     }
   }
+  function gotoUserdashboard(){
+    if (currentUserID.value) {
+      router.push('/userdashboard')
+    } else {
+      alert("You must log in first!")
+    }
+  }
 
   /*function gotoProductlist() {
     if (currentUserID.value) {
@@ -46,6 +53,7 @@
       <button @click="gotoReceipts">Receipts</button>
       <button @click="gotoMetrics">Metrics</button>
       <button @click="gotoRecommendations">Recommendations</button>
+      <button @click="gotoUserdashboard">userdashboard</button>
     </nav>
 
     <!-- This renders your pages -->

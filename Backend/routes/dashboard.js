@@ -41,7 +41,7 @@ router.get('/dashboardcheck/:id', async(req,res) => {
         INNER JOIN receipt as RE on RI.receiptID = RE.receiptID
         WHERE RE.usersID = ${userID};`;
 
-        let budgets = await prisma.$queryRaw`SELECT BU.budgetID, BU.budgetamount FROM budget as BU
+        let budgets = await prisma.$queryRaw`SELECT BU.budgetID, BU.budgetamount, BU.startdate, BU.enddate FROM budget as BU
         WHERE BU.usersID = ${userID};`;
 
         res.json({
