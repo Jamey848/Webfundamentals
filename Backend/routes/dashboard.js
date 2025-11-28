@@ -140,14 +140,12 @@ router.get('/budget', async(req, res) => {
 })
 
 router.delete('/budget/:id', async(req, res) => {
-    let usersID = req.body.usersID;
-    let budgetID = req.params.id;
+    let budgetID = parseInt(req.params.id);
 
-    if(typeof budgetamount === "number")
+    if(!isNaN(budgetID))
     {
         await prisma.budget.delete({
             where:{
-                userID: usersID,
                 budgetID: budgetID
             }
         });

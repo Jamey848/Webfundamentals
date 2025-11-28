@@ -22,6 +22,18 @@
         console.log(totalamount.value, budgets.value, username.value, gmail.value);
     });
 
+    async function deleteBudget(budgetID){
+        const deletedBudget = await fetch("http://localhost:3000/dashboard/budget/" + parseInt(budgetID), {
+            method: "DELETE"
+        });
+        const data = await deletedBudget.json();
+        if(data.error){
+            alert("Unable to remove the item. Please try again later");
+        }
+
+        budgets.value = budgets.value.filter(b => b.budgetID !== budgetID);
+    }
+
     function getBudgetColor(percentage) {
         if (percentage > 70) return '#d4edda';  // green-ish for high remaining
         if (percentage > 30) return '#fff3cd';  // yellow-ish for medium remaining
@@ -38,13 +50,13 @@
         <div class="user-budgets">
             <h1>Welcome Back!</h1>
             <div class="total-spent">
-                <p v-if="totalamount.length">Your current total spend is: {{ totalamount }}</p>
+                <p v-if="totalamount.length">Your current total spend is: €{{ totalamount }}</p>
             </div>
             <h2>Your current budgets</h2>
             <div v-for="budget in budgets" :key="budget.budgetID" class="budgets" :style="{ backgroundColor: getBudgetColor(parseInt(budget.spent_budget)) }">
                 <p>Budget #{{ budget.budgetID }}. Amount: {{ budget.budgetamount }}. Percentage left: {{ budget.spent_budget }}%</p>
                 <!--<p style="position:relative; right:100px" v-if="budget.startdate">Timeslot: {{ budget.startdate.slice(0, 10) }} | {{ budget.enddate.slice(0, 10) }}</p>-->
-                <img src="@/assets/trash.png" style="width:30px; height:30px">
+                <img @click="deleteBudget(budget.budgetID)" class="trash-icon" src="@/assets/trash.png" style="width:30px; height:30px">
             </div>
             <button>Add budget</button>
         </div>
@@ -54,6 +66,8 @@
             <img src="@/assets/defaultpfp.png" style="width:300px; height:300px">
             <p>{{ username }}</p>
             <p>{{ gmail }}</p>
+
+            <button>Change your account settings</button>
         </div>
     </div>
 </template>
@@ -65,6 +79,8 @@
     }
     .user-budgets {
         width: 750px;
+        max-height: 500px;
+        overflow-y: auto;
         margin-left:50px;
         margin-top: 50px;
         background-color: #fdfdfd;
@@ -174,5 +190,13 @@
     .user-card p:last-of-type {
         color: #555;
         font-size: 1rem;
+    }
+
+    .trash-icon{
+        cursor:pointer;
+    }
+
+    .trash-icon:hover{
+        transform: scale(1.02)
     }
 </style>
