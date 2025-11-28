@@ -74,6 +74,8 @@ async function gptwisdom(userdata){
         const response = await fetch(url, options);
         const resu = await response.json();
 
+        console.log(resu);
+
         // Analysis: everything between "1. **Analysis**" and "2. **Recommendations**"
         
         //console.log(recommended);
