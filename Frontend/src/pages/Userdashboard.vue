@@ -22,30 +22,49 @@
         console.log(totalamount.value, budgets.value, username.value, gmail.value);
     });
 
+    function getBudgetColor(percentage) {
+        if (percentage > 70) return '#d4edda';  // green-ish for high remaining
+        if (percentage > 30) return '#fff3cd';  // yellow-ish for medium remaining
+        return '#f8d7da';                        // red-ish for low remaining
+    }
+
 </script>
 
 <!--
     Template
 -->
 <template>
-    <div class="user-budgets">
-        <h1>Welcome Back!</h1>
-        <div class="total-spent">
-            <p v-if="totalamount.length">Your current total spend is: {{ totalamount }}</p>
+    <div class="page-layout">
+        <div class="user-budgets">
+            <h1>Welcome Back!</h1>
+            <div class="total-spent">
+                <p v-if="totalamount.length">Your current total spend is: {{ totalamount }}</p>
+            </div>
+            <h2>Your current budgets</h2>
+            <div v-for="budget in budgets" :key="budget.budgetID" class="budgets" :style="{ backgroundColor: getBudgetColor(parseInt(budget.spent_budget)) }">
+                <p>Budget #{{ budget.budgetID }}. Amount: {{ budget.budgetamount }}. Percentage left: {{ budget.spent_budget }}%</p>
+                <!--<p style="position:relative; right:100px" v-if="budget.startdate">Timeslot: {{ budget.startdate.slice(0, 10) }} | {{ budget.enddate.slice(0, 10) }}</p>-->
+                <img src="@/assets/trash.png" style="width:30px; height:30px">
+            </div>
+            <button>Add budget</button>
         </div>
-        <h2>Your current budgets</h2>
-        <div v-for="budget in budgets" :key="budget.budgetID" class="budgets">
-            <p> Amount: {{ budget.budgetamount }}.</p>
-            <p style="position:relative; right:100px" v-if="budget.startdate">Timeslot: {{ budget.startdate.slice(0, 10) }} | {{ budget.enddate.slice(0, 10) }}</p>
-            <img src="@/assets/trash.png" style="width:30px; height:30px">
+        <div class="user-card">
+            <h3>Your Account</h3>
+
+            <img src="@/assets/defaultpfp.png" style="width:300px; height:300px">
+            <p>{{ username }}</p>
+            <p>{{ gmail }}</p>
         </div>
-        <button>Add budget</button>
     </div>
 </template>
 
 <style scoped>
+    .page-layout{
+        display: flex;
+        flex-direction: row;
+    }
     .user-budgets {
-        width: 700px;
+        width: 750px;
         margin-left:50px;
         margin-top: 50px;
         background-color: #fdfdfd;
@@ -108,5 +127,52 @@
         background: linear-gradient(135deg, #6b73ff, #000dff);
         border-radius: 8px;
         cursor: pointer;
+    }
+
+    .user-card{
+        display:block;
+        margin-left:40px;
+        margin-top: 50px;
+        background-color: red;
+    }
+
+    .user-card {
+        width: 500px;
+        background: linear-gradient(145deg, #f7f9fc, #eef1f7);
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .user-card h3 {
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #1a1a1a;
+    }
+
+    .user-card img {
+        height: 180px;
+        border-radius: 50%;
+        margin-bottom: 20px;
+        border: 5px solid #fff;
+    }
+
+    .user-card p {
+        margin: 8px 0;
+        font-size: 1.1rem;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .user-card p:first-of-type {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #000dff;
+    }
+
+    .user-card p:last-of-type {
+        color: #555;
+        font-size: 1rem;
     }
 </style>

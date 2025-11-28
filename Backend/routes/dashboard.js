@@ -41,8 +41,12 @@ router.get('/dashboardcheck/:id', async(req,res) => {
         INNER JOIN receipt as RE on RI.receiptID = RE.receiptID
         WHERE RE.usersID = ${userID};`;
 
-        let budgets = await prisma.$queryRaw`SELECT BU.budgetID, BU.budgetamount, BU.startdate, BU.enddate FROM budget as BU
-        WHERE BU.usersID = ${userID};`;
+        let budgets = await prisma.$queryRaw`SELECT BU.budgetID, BU.budgetamount, BU.startdate, BU.enddate, 
+        ROUND(((BU.budgetamount - COALESCE(SUM(RI.price), 0)) / BU.budgetamount) * 100, 0) AS spent_budget FROM budget as BU
+        LEFT JOIN receipt AS RE ON BU.budgetID = RE.budgetID
+        LEFT JOIN receiptitems AS RI ON RE.receiptID = RI.receiptID
+        WHERE BU.usersID = ${userID}
+        GROUP BY BU.budgetID, BU.budgetamount;;`;
 
         res.json({
             userinfo: userinfo,
