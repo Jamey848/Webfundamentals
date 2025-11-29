@@ -4,11 +4,16 @@
 <script setup>
     // Imports
     import { onMounted, ref } from 'vue';
+    import budgetwindow from "../components/Budget.vue"
 
     const totalamount = ref('');
     const budgets = ref([]);
     const username = ref('');
     const gmail = ref('');
+
+    const selectedBudgetID = ref('');
+
+    const visibility = ref(false);
 
     onMounted(async () => {
         const dashboardinfo = await fetch("http://localhost:3000/dashboard/dashboardcheck/1");
@@ -34,10 +39,22 @@
         budgets.value = budgets.value.filter(b => b.budgetID !== budgetID);
     }
 
+    function viewbudget(budgetID){
+        selectedBudgetID.value = parseInt(budgetID);
+        visibility.value = true;
+    }
+
     function getBudgetColor(percentage) {
         if (percentage > 70) return '#d4edda';  // green-ish for high remaining
         if (percentage > 30) return '#fff3cd';  // yellow-ish for medium remaining
         return '#f8d7da';                        // red-ish for low remaining
+    }
+
+    function closewindow(){
+        visibility.value = false;
+    }
+    function openwindow(){
+        visibility.value = true;
     }
 
 </script>
@@ -46,17 +63,17 @@
     Template
 -->
 <template>
-    <div class="page-layout">
+    <div class="page-layout" :style="{ filter: visibility ? 'blur(5px)' : 'none' }">
         <div class="user-budgets">
             <h1>Welcome Back!</h1>
             <div class="total-spent">
                 <p v-if="totalamount.length">Your current total spend is: €{{ totalamount }}</p>
             </div>
             <h2>Your current budgets</h2>
-            <div v-for="budget in budgets" :key="budget.budgetID" class="budgets" :style="{ backgroundColor: getBudgetColor(parseInt(budget.spent_budget)) }">
-                <p>Budget #{{ budget.budgetID }}. Amount: {{ budget.budgetamount }}. Percentage left: {{ budget.spent_budget }}%</p>
+            <div @click="viewbudget(budget.budgetID)" v-for="budget in budgets" :key="budget.budgetID" class="budgets" :style="{ backgroundColor: getBudgetColor(parseInt(budget.spent_budget)) }">
+                <p>Budget #{{ budget.budgetID }}.</p>
                 <!--<p style="position:relative; right:100px" v-if="budget.startdate">Timeslot: {{ budget.startdate.slice(0, 10) }} | {{ budget.enddate.slice(0, 10) }}</p>-->
-                <img @click="deleteBudget(budget.budgetID)" class="trash-icon" src="@/assets/trash.png" style="width:30px; height:30px">
+                <img @click.stop="deleteBudget(budget.budgetID)" class="trash-icon" src="@/assets/trash.png" style="width:30px; height:30px">
             </div>
             <button>Add budget</button>
         </div>
@@ -70,6 +87,11 @@
             <button>Change your account settings</button>
         </div>
     </div>
+    <budgetwindow 
+    v-if="visibility"
+    :budgetID="selectedBudgetID"
+    @close="closewindow()"
+    />
 </template>
 
 <style scoped>

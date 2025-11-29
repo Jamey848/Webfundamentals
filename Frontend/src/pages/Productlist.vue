@@ -5,6 +5,7 @@
 <script setup>
     import { ref, onMounted } from 'vue';
     import { useRoute } from 'vue-router';
+    import { currentUserID } from "../sessiondata/sessionID"
     import AdditemWindow from '../components/Addreceiptitem.vue';
 
     const showAdditem = ref(false); // Ref() = 
@@ -13,16 +14,28 @@
     const route = useRoute();
     const rItems = ref([]);
     const totalprice = ref('');
+    const budgets = ref('');
 
-    onMounted(() => { // onMounted = 
-        const R_ID = route.params.receiptID;
-        if (R_ID) {
-            receiptID.value = R_ID;
-            getReceiptitems(R_ID);
-        } else {
-            console.warn('No receiptID in route params');
-        }
-    });
+    onMounted(async() => { // onMounted = 
+      
+      const allbudgets = await fetch(`http://localhost:3000/dashboard/budget/1`, {
+        method: "GET"
+      });
+
+      const data = await allbudgets.json();
+      budgets.value = data;
+
+      console.log(budgets.value);
+
+      const R_ID = route.params.receiptID;
+      if (R_ID) {
+          receiptID.value = R_ID;
+          getReceiptitems(R_ID);
+      } 
+      else {
+          console.warn('No receiptID in route params');
+      }
+  });
 
     function closeSubwindow(){
         showAdditem.value = false;

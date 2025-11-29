@@ -41,12 +41,12 @@ router.get('/dashboardcheck/:id', async(req,res) => {
         INNER JOIN receipt as RE on RI.receiptID = RE.receiptID
         WHERE RE.usersID = ${userID};`;
 
-        let budgets = await prisma.$queryRaw`SELECT BU.budgetID, BU.budgetamount, BU.startdate, BU.enddate, 
+        let budgets = await prisma.$queryRaw`SELECT BU.budgetID, 
         ROUND(((BU.budgetamount - COALESCE(SUM(RI.price), 0)) / BU.budgetamount) * 100, 0) AS spent_budget FROM budget as BU
         LEFT JOIN receipt AS RE ON BU.budgetID = RE.budgetID
         LEFT JOIN receiptitems AS RI ON RE.receiptID = RI.receiptID
         WHERE BU.usersID = ${userID}
-        GROUP BY BU.budgetID, BU.budgetamount;;`;
+        GROUP BY BU.budgetID;`;
 
         res.json({
             userinfo: userinfo,
@@ -127,12 +127,12 @@ router.post('/budget', async(req, res) => {
     }
 })
 
-router.get('/budget', async(req, res) => {
-    let usersID = req.body.userID;
+router.get('/budget/:id', async(req, res) => {
+    let usersID = req.params.id;
 
     let budgets = await prisma.budget.findMany({
         where:{
-            usersID: usersID
+            usersID: parseInt(usersID)
         }
     });
 
@@ -186,6 +186,24 @@ router.put('/budget/:id', async(req, res) => {
             "error": "wrong datatype"
         })
     }
+})
+
+router.get("/budgetinfo/:id", async(req, res) => {
+    const budgetinfo = await prisma.$queryRaw`SELECT BU.budgetID, BU.budgetamount, BU.startdate, BU.enddate, 
+        ROUND(((BU.budgetamount - COALESCE(SUM(RI.price), 0)) / BU.budgetamount) * 100, 0) AS spent_budget FROM budget as BU
+        LEFT JOIN receipt AS RE ON BU.budgetID = RE.budgetID
+        LEFT JOIN receiptitems AS RI ON RE.receiptID = RI.receiptID
+        WHERE BU.budgetID = ${String(req.params.id)}
+        GROUP BY BU.budgetID, BU.budgetamount;`;
+    
+    res.json(budgetinfo);
+})
+
+router.get("/budget_linkedreceipts/:id", async(req, res) => {
+    const receiptlinks = await prisma.$queryRaw`SELECT receiptID, receiptname FROM receipt
+    WHERE budgetID = ${parseInt(req.params.id)};`;
+    
+    res.json(receiptlinks);
 })
 
 //router.put
