@@ -152,6 +152,21 @@ router.delete('/:id', async(req, res) => {
   res.json(deletedNode);
 })
 
+router.put('/allocatedbudget', async(req, res) => {
+  const receiptID = req.body.receiptID;
+  const budgetID = req.body.budgetID;
+
+  const updatedReceipt = await prisma.receipt.update({
+    where: 
+    { 
+      receiptID: parseInt(receiptID) 
+    },
+      data: { budgetID: parseInt(budgetID) }
+    });
+
+  res.json(updatedReceipt);
+})
+
 // UPDATE RECEIPT => Register it as a past purchase!
 router.put('/:id', async(req, res) => {
   let updateReceipt = await prisma.receipt.update({

@@ -7,6 +7,19 @@ const router = express.Router();
 const {PrismaClient} = require('../generated/prisma');
 const prisma = new PrismaClient();
 
+router.get('/permissioncheck/:id', async(req, res) => {
+    const usersID = req.params.id;
+
+    const check = await prisma.users.findUnique({
+        where:{
+            usersID: parseInt(usersID)
+        }
+    })
+
+    res.json(check);
+})
+
+
 //------------------------------
 // [GET] all user information (ADMIN DASHBOARD)
 // Data. Username, Gmail, Budget, Permission
@@ -190,7 +203,7 @@ router.put('/budget/:id', async(req, res) => {
 
 router.get("/budgetinfo/:id", async(req, res) => {
     const budgetinfo = await prisma.$queryRaw`SELECT BU.budgetID, BU.budgetamount, BU.startdate, BU.enddate, 
-        ROUND(((BU.budgetamount - COALESCE(SUM(RI.price), 0)) / BU.budgetamount) * 100, 0) AS spent_budget FROM budget as BU
+        ROUND((COALESCE(SUM(RI.price), 0) / BU.budgetamount) * 100, 0) AS spent_budget FROM budget as BU
         LEFT JOIN receipt AS RE ON BU.budgetID = RE.budgetID
         LEFT JOIN receiptitems AS RI ON RE.receiptID = RI.receiptID
         WHERE BU.budgetID = ${String(req.params.id)}
@@ -200,8 +213,17 @@ router.get("/budgetinfo/:id", async(req, res) => {
 })
 
 router.get("/budget_linkedreceipts/:id", async(req, res) => {
+    const receiptID = req.params.id;
+    const receiptlinks = await prisma.$queryRaw`SELECT budgetID FROM receipt
+    WHERE receipt.receiptID = ${receiptID};`;
+    
+    res.json(receiptlinks);
+})
+
+router.get("/budget_to_receipts/:id", async(req, res) => {
+    const budgetID = req.params.id;
     const receiptlinks = await prisma.$queryRaw`SELECT receiptID, receiptname FROM receipt
-    WHERE budgetID = ${parseInt(req.params.id)};`;
+    WHERE receipt.budgetID = ${budgetID};`;
     
     res.json(receiptlinks);
 })

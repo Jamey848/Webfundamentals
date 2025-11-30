@@ -43,11 +43,11 @@ router.post('/', async(req, res) => {
 })
 
 async function gptwisdom(userdata){
-    const url = 'https://chatgpt-42.p.rapidapi.com/chatgpt';
+    const url = 'https://chatgpt-42.p.rapidapi.com/conversationllama3';
     const options = {
         method: 'POST',
         headers: {
-            'x-rapidapi-key': '00f8a3d412mshae13d562b6987c6p169362jsn20c5892a8c91',
+            'x-rapidapi-key': '520e0443e5msh665930f9c2e3c89p15a3cbjsnc0ddb1252286',
             'x-rapidapi-host': 'chatgpt-42.p.rapidapi.com',
             'Content-Type': 'application/json'
         },
@@ -56,7 +56,7 @@ async function gptwisdom(userdata){
                 {
                     role: 'user',
                     content: `Given the data below, provide:
-                    Recommendations on spending habits (limit your response to 300 words)
+                    Recommendations on spending habits (limit your response to 400 words)
 
                     (If you don't have enough data: be transparant about it and try your best)
                     

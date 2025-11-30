@@ -16,7 +16,7 @@
 
     onMounted(async () => {
         const budgetinfo = await fetch(`http://localhost:3000/dashboard/budgetinfo/${parseInt(prop.budgetID)}`);
-        const linkedreceipts = await fetch(`http://localhost:3000/dashboard/budget_linkedreceipts/${parseInt(prop.budgetID)}`);
+        const linkedreceipts = await fetch(`http://localhost:3000/dashboard/budget_to_receipts/${parseInt(prop.budgetID)}`);
 
         const budgetdata = await budgetinfo.json();
         const receiptdata = await linkedreceipts.json();
@@ -45,16 +45,18 @@
             <p>Amount: {{ budget[0].budgetamount }}</p>
             <p>Spent budget: {{ budget[0].spent_budget }}%</p>
             <p style="border-bottom:3px solid #000; padding-bottom:10px">Allocated time: {{ budget[0].startdate }} - {{ budget[0].enddate }}</p>
+
+            <div class="linked-receipts" v-for="receipt in receiptlinks" :key="receipt.receiptID">
+                <p> Receipt: {{ receipt.receiptname }} </p>
+            </div>
+            <button @click="close()">Return</button>
         </div>
-        <div class="linked-receipts" v-if="receiptlinks.length">
-            <p v-for="receipt in receiptlinks" :key="receipt.receiptID"> Receipt: {{ receipt.receiptname }} </p>
-        </div>
-        <button @click="close()">GO AWAY</button>
     </div>
 </template>
 
 <style scoped>
     .center-wrapper {
+        display:flex;
         position: absolute;
         top: 25%;
         left: 30%;
@@ -90,13 +92,24 @@
 
     .budget button {
         margin-top: 15px;
-        padding: 15px;
+        padding: 8px;
         font-size: 18px;
         font-weight: bold;
         color: #fff;
-        background: linear-gradient(135deg, #6b73ff, #000dff);
+        background-color: black;
         border: none;
         border-radius: 8px;
         cursor: pointer;
+        float:right;
+    }
+
+    .linked-receipts{
+        background-color: #dedede;
+        width:400px;
+        max-height: 200px;
+        overflow-y:auto;
+        border-radius: 10%;
+        margin:0 auto;
+        margin-top:10px;
     }
 </style>

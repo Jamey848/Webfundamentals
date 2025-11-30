@@ -25,9 +25,19 @@
       alert("You must log in first!")
     }
   }
-  function gotoUserdashboard(){
+  async function gotoUserdashboard(){
     if (currentUserID.value) {
-      router.push('/userdashboard')
+      const permissioncheck = await fetch("http://localhost:3000/dashboard/permissioncheck/" + currentUserID.value);
+
+      const data = await permissioncheck.json();
+
+      if(data.permission == 1){
+        router.push('/userdashboard')
+      }
+      else{
+        console.log("admin detected!");
+        console.log(data.permission);
+      }
     } else {
       alert("You must log in first!")
     }
