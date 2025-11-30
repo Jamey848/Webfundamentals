@@ -28,7 +28,7 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                userID: 1,
+                userID: currentUserID.value,
                 timefilter: timeSelection.value,
                 futurepurchase: updateTime(timeSelection)
             })
@@ -36,9 +36,9 @@
 
         const data = await receiptdata.json();
 
-        shopcount.value = data.count[0].shoppingcount; // => KNOW YOUR DATA STRUCTURE
-        totalprice.value = data.total[0].totalprice;
-        store.value = data.store[0].storename;
+        shopcount.value = data.count?.[0]?.shoppingcount ?? 0;
+        totalprice.value = data.total?.[0]?.totalprice ?? 0;
+        store.value = data.store?.[0]?.storename ?? 'No store yet';
         receipts.value = data.nodes;
 
         groupedReceipts.value = receipts.value.reduce((acc, r) => { // => value.reduce(acc, r) = Accumulator: the thing you're currently building. Default value initialized as {}. r: receiptvalues, go through all receipts
@@ -89,6 +89,8 @@
         name:"addreceipt"
       })
     }
+
+    console.log(currentUserID.value);
 </script>
 
 <!--

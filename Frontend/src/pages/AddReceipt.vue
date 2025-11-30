@@ -65,7 +65,7 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    userID: 1,
+                    userID: currentUserID.value,
                     storeID: parseInt(rstore),
                     receiptname: rname,
                     futurepurchase: future,
@@ -74,6 +74,7 @@
             })
 
             const data = await insertReceipt.json();
+            console.log(data);
 
             if(data.error){
                 Rmessage.value = data.error;

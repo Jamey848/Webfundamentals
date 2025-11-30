@@ -4,6 +4,7 @@
 <script setup>
     // Imports
     import { onMounted, ref } from 'vue';
+    import { currentUserID } from "../sessiondata/sessionID"
     import budgetwindow from "../components/Budget.vue"
 
     const totalamount = ref('');
@@ -16,7 +17,7 @@
     const visibility = ref(false);
 
     onMounted(async () => {
-        const dashboardinfo = await fetch("http://localhost:3000/dashboard/dashboardcheck/1");
+        const dashboardinfo = await fetch("http://localhost:3000/dashboard/dashboardcheck/" + currentUserID.value);
         const data = await dashboardinfo.json();
 
         totalamount.value = data.totalamount[0].TotalAmount; // already the value
@@ -67,7 +68,7 @@
         <div class="user-budgets">
             <h1>Welcome Back!</h1>
             <div class="total-spent">
-                <p v-if="totalamount.length">Your current total spend is: €{{ totalamount }}</p>
+                <p v-if="totalamount">Your current total spend is: €{{ totalamount }}</p>
             </div>
             <h2>Your current budgets</h2>
             <div @click="viewbudget(budget.budgetID)" v-for="budget in budgets" :key="budget.budgetID" class="budgets" :style="{ backgroundColor: getBudgetColor(parseInt(budget.spent_budget)) }">

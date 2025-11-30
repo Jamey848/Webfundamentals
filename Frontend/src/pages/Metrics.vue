@@ -1,6 +1,7 @@
 <script setup>
     import ApexCharts from "vue3-apexcharts";
     import { ref, onMounted } from "vue";
+    import { currentUserID } from "../sessiondata/sessionID"
 
     const dates = ref([]); // => Y-AXIS
     const prices = ref([]); // => X-AXIS
@@ -48,7 +49,7 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                userID: 1
+                userID: currentUserID.value
             })
         })
 
@@ -67,7 +68,7 @@
                 body: JSON.stringify({
                 CategoryName: category.value,
                 TimeFilter: timefilter.value,
-                userID: 1
+                userID: currentUserID.value
             })
         });
 
@@ -94,9 +95,9 @@
 
             <h3>Top 3 categories</h3>
             <div class="top-categories" v-if="topthree.length">
-                <p>#1. {{ topthree[0].categoryname }}</p>
-                <p>#2. {{ topthree[1].categoryname }}</p>
-                <p>#3. {{ topthree[2].categoryname }}</p>
+                <p>#1. {{ topthree[0]?.categoryname ?? 'N/A' }}</p>
+                <p>#2. {{ topthree[1]?.categoryname ?? 'N/A' }}</p>
+                <p>#3. {{ topthree[2]?.categoryname ?? 'N/A' }}</p>
             </div>
 
             <h3>Category Ratios</h3>

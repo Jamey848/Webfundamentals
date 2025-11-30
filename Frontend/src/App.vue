@@ -42,14 +42,6 @@
       alert("You must log in first!")
     }
   }
-
-  /*function gotoProductlist() {
-    if (currentUserID.value) {
-      router.push('/productlist')
-    } else {
-      alert("You must log in first!")
-    }
-  }*/
 </script>
 
 <template>

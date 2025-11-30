@@ -4,6 +4,7 @@
 <script setup>
     // Imports
     import { onMounted, ref } from 'vue';
+    import { currentUserID } from "../sessiondata/sessionID"
 
     const Wisdom = ref({});
 
@@ -14,7 +15,7 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                usersID: 1
+                usersID: parseInt(currentUserID.value)
             })
         });
 
@@ -54,20 +55,6 @@
         </div>
     </div>
 </template>
-
-<!--<template>
-    <h1>Recommendations</h1>
-    <button @click="chattywisdow()">CHECK IT OUT</button>
-    <br><br>
-    <div>
-        <h2>Get usefull recommendations with the ChatGPT Api!</h2>
-        <div>
-            <p v-for="(line, index) in Wisdom" :key="index" style="margin-bottom: 1em;">
-                {{ line }}
-            </p>
-        </div>
-    </div>
-</template>-->
 
 <style scoped>
     .container {

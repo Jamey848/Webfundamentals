@@ -32,7 +32,7 @@
         console.warn('No receiptID in route params');
       }
       
-      const allbudgets = await fetch(`http://localhost:3000/dashboard/budget/1`, {
+      const allbudgets = await fetch(`http://localhost:3000/dashboard/budget/` + currentUserID.value, {
         method: "GET"
       });
 
