@@ -44,7 +44,7 @@
             </h1>
             <p>Amount: {{ budget[0].budgetamount }}</p>
             <p>Spent budget: {{ budget[0].spent_budget }}%</p>
-            <p style="border-bottom:3px solid #000; padding-bottom:10px">Allocated time: {{ budget[0].startdate }} - {{ budget[0].enddate }}</p>
+            <p style="border-bottom:3px solid #000; padding-bottom:10px">Allocated time: {{ new Date(budget[0].startdate).toLocaleDateString() }} - {{ new Date(budget[0].enddate).toLocaleDateString() }}</p>
 
             <div class="linked-receipts" v-for="receipt in receiptlinks" :key="receipt.receiptID">
                 <p> Receipt: {{ receipt.receiptname }} </p>

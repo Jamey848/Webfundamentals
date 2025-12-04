@@ -6,6 +6,7 @@
     import { onMounted, ref } from 'vue';
     import { currentUserID } from "../sessiondata/sessionID"
     import budgetwindow from "../components/Budget.vue"
+    import addbudgetwindow from "../components/Addbudget.vue"
 
     const totalamount = ref('');
     const budgets = ref([]);
@@ -15,6 +16,7 @@
     const selectedBudgetID = ref('');
 
     const visibility = ref(false);
+    const addvisibility = ref(false);
 
     onMounted(async () => {
         const dashboardinfo = await fetch("http://localhost:3000/dashboard/dashboardcheck/" + currentUserID.value);
@@ -53,9 +55,10 @@
 
     function closewindow(){
         visibility.value = false;
+        addvisibility.value = false;
     }
-    function openwindow(){
-        visibility.value = true;
+    function openaddbudget(){
+        addvisibility.value = true;
     }
 
 </script>
@@ -76,7 +79,7 @@
                 <!--<p style="position:relative; right:100px" v-if="budget.startdate">Timeslot: {{ budget.startdate.slice(0, 10) }} | {{ budget.enddate.slice(0, 10) }}</p>-->
                 <img @click.stop="deleteBudget(budget.budgetID)" class="trash-icon" src="@/assets/trash.png" style="width:30px; height:30px">
             </div>
-            <button>Add budget</button>
+            <button @click="openaddbudget()">Add budget</button>
         </div>
         <div class="user-card">
             <h3>Your Account</h3>
@@ -93,6 +96,12 @@
     :budgetID="selectedBudgetID"
     @close="closewindow()"
     />
+
+    <addbudgetwindow
+    v-if="addvisibility"
+    @close="closewindow()"/>
+
+
 </template>
 
 <style scoped>

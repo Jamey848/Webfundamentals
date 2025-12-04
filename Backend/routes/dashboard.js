@@ -52,7 +52,8 @@ router.get('/dashboardcheck/:id', async(req,res) => {
 
         let totalamount = await prisma.$queryRaw`SELECT SUM(RI.price) AS TotalAmount FROM receiptitems as RI
         INNER JOIN receipt as RE on RI.receiptID = RE.receiptID
-        WHERE RE.usersID = ${userID};`;
+        WHERE RE.usersID = ${userID} 
+        AND RE.futurepurchase = 0;`;
 
         let budgets = await prisma.$queryRaw`SELECT BU.budgetID, 
         ROUND(((BU.budgetamount - COALESCE(SUM(RI.price), 0)) / BU.budgetamount) * 100, 0) AS spent_budget FROM budget as BU
@@ -116,15 +117,19 @@ router.put('/admin/:id', async(req,res) => {
 })
 
 router.post('/budget', async(req, res) => {
-    let usersID = req.body.usersID;
-    let budgetamount = req.body.budgetamount;
+    const usersID = req.body.usersID;
+    const budgetamount = req.body.budgetamount;
+    const startdate = req.body.startdate;
+    const enddate = req.body.enddate;
 
     if(typeof budgetamount === "number")
     {
         await prisma.budget.create({
             data:{
                 usersID: usersID,
-                budgetamount: budgetamount
+                budgetamount: budgetamount,
+                startdate: new Date(startdate),
+                enddate: new Date(enddate)
             }
         });
 
