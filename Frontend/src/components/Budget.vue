@@ -58,8 +58,8 @@
     .center-wrapper {
         display:flex;
         position: absolute;
-        top: 25%;
-        left: 30%;
+        top: 35%;
+        left: 32%;
         margin-top: -50px;
         margin-left: -30px;
     }

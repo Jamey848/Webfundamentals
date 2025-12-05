@@ -7,6 +7,8 @@
     import { currentUserID } from "../sessiondata/sessionID"
     import budgetwindow from "../components/Budget.vue"
     import addbudgetwindow from "../components/Addbudget.vue"
+    import appenduserwindow from "../components/Appenduser.vue"
+    import passchangewindow from "../components/Passchange.vue"
 
     const totalamount = ref('');
     const budgets = ref([]);
@@ -15,12 +17,19 @@
 
     const selectedBudgetID = ref('');
 
+    const blur = ref(false);
+
     const visibility = ref(false);
     const addvisibility = ref(false);
+    const uservisibility = ref(false);
+    const passvisibility = ref(false);
 
-    onMounted(async () => {
+    async function loaddashboard() {
+        
         const dashboardinfo = await fetch("http://localhost:3000/dashboard/dashboardcheck/" + currentUserID.value);
         const data = await dashboardinfo.json();
+
+        console.log(data);
 
         totalamount.value = data.totalamount[0].TotalAmount; // already the value
         budgets.value = data.budgets;
@@ -28,6 +37,10 @@
         gmail.value = data.userinfo.gmail;
 
         console.log(totalamount.value, budgets.value, username.value, gmail.value);
+    };
+
+    onMounted(async () => {
+        await loaddashboard();
     });
 
     async function deleteBudget(budgetID){
@@ -42,23 +55,54 @@
         budgets.value = budgets.value.filter(b => b.budgetID !== budgetID);
     }
 
-    function viewbudget(budgetID){
-        selectedBudgetID.value = parseInt(budgetID);
-        visibility.value = true;
-    }
+    function getBudgetColor(percentage, enddate) {
+        const today = new Date();
+        const end = new Date(enddate);
 
-    function getBudgetColor(percentage) {
+        console.log(enddate);
+
+        if(end < today){
+            return '#e0e0e0';
+        }
         if (percentage > 70) return '#d4edda';  // green-ish for high remaining
         if (percentage > 30) return '#fff3cd';  // yellow-ish for medium remaining
         return '#f8d7da';                        // red-ish for low remaining
     }
 
+    // OPEN SUBWINDOWS
+
+    function openpass(){
+        passvisibility.value = true;
+        blur.value = true;
+    }
+
+    function openaddbudget(){
+        addvisibility.value = true;
+        blur.value = true;
+    }
+
+    function viewbudget(budgetID){
+        selectedBudgetID.value = parseInt(budgetID);
+        visibility.value = true;
+        blur.value = true;
+    }
+
+    function viewappenduser(){
+        uservisibility.value = true;
+        blur.value = true;
+    }
+
+    // CLOSE SUBWINDOWS
+
     function closewindow(){
         visibility.value = false;
         addvisibility.value = false;
-    }
-    function openaddbudget(){
-        addvisibility.value = true;
+        uservisibility.value = false;
+        passvisibility.value = false;
+
+        blur.value = false;
+
+        loaddashboard();
     }
 
 </script>
@@ -67,14 +111,14 @@
     Template
 -->
 <template>
-    <div class="page-layout" :style="{ filter: visibility ? 'blur(5px)' : 'none' }">
+    <div class="page-layout" :style="{ filter: blur ? 'blur(5px)' : 'none' }">
         <div class="user-budgets">
             <h1>Welcome Back!</h1>
             <div class="total-spent">
                 <p v-if="totalamount">Your current total spend is: €{{ totalamount }}</p>
             </div>
             <h2>Your current budgets</h2>
-            <div @click="viewbudget(budget.budgetID)" v-for="budget in budgets" :key="budget.budgetID" class="budgets" :style="{ backgroundColor: getBudgetColor(parseInt(budget.spent_budget)) }">
+            <div @click="viewbudget(budget.budgetID)" v-for="budget in budgets" :key="budget.budgetID" class="budgets" :style="{ backgroundColor: getBudgetColor(parseInt(budget.spent_budget), budget.enddate) }">
                 <p>Budget #{{ budget.budgetID }}.</p>
                 <!--<p style="position:relative; right:100px" v-if="budget.startdate">Timeslot: {{ budget.startdate.slice(0, 10) }} | {{ budget.enddate.slice(0, 10) }}</p>-->
                 <img @click.stop="deleteBudget(budget.budgetID)" class="trash-icon" src="@/assets/trash.png" style="width:30px; height:30px">
@@ -88,7 +132,8 @@
             <p>{{ username }}</p>
             <p>{{ gmail }}</p>
 
-            <button>Change your account settings</button>
+            <button @click="viewappenduser()">Change your account settings</button><br><br>
+            <button @click="openpass()">Change your password</button>
         </div>
     </div>
     <budgetwindow 
@@ -101,6 +146,13 @@
     v-if="addvisibility"
     @close="closewindow()"/>
 
+    <appenduserwindow
+    v-if="uservisibility"
+    @close="closewindow()"/>
+    
+    <passchangewindow 
+    v-if="passvisibility"
+    @close="closewindow()"/>
 
 </template>
 

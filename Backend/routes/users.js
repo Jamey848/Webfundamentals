@@ -111,6 +111,51 @@ router.post('/register', async(req, res) => {
   }
 });
 
+router.post('/changepass', async (req, res) => { 
+  const userID = req.body.userID;
+  const oldPassword = req.body.oldPassword;
+  const newPassword = req.body.newPassword;
+
+  if (!newPassword || !oldPassword || !userID) {
+    return res.json({ error: "Missing fields" });
+  }
+
+  // 1. Get user
+  const user = await prisma.users.findUnique({
+    where: { usersID: parseInt(userID) }
+  });
+
+  if (!user) {
+    return res.json({ error: "User not found" });
+  }
+
+  // 2. Compare old password
+  const passwordMatched = await bcrypt.compare(oldPassword, user.userpassword);
+
+  if (!passwordMatched) {
+    return res.json({ error: "Invalid password" });
+  }
+
+  // 3. Validate new password using your passwordCheck() function
+  const passCheck = passwordCheck(newPassword);
+  if (passCheck !== "correct") {
+    return res.json({ error: passCheck });
+  }
+
+  // 4. Hash new password
+  const salt = await bcrypt.genSalt();
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+  // 5. Update DB
+  await prisma.users.update({
+    where: { userID: parseInt(userID) },
+    data: { userpassword: hashedPassword }
+  });
+
+  // 6. Respond success
+  res.json({ success: true, message: "Password updated successfully" });
+});
+
 function gmailcheck(gmail){
   return valid.isEmail(gmail)
 }

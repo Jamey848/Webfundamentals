@@ -77,7 +77,7 @@
         display:flex;
         position: absolute;
         top: 25%;
-        left: 30%;
+        left: 35%;
         margin-top: -50px;
         margin-left: -30px;
     }

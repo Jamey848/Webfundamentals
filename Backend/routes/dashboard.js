@@ -56,7 +56,7 @@ router.get('/dashboardcheck/:id', async(req,res) => {
         AND RE.futurepurchase = 0;`;
 
         let budgets = await prisma.$queryRaw`SELECT BU.budgetID, 
-        ROUND(((BU.budgetamount - COALESCE(SUM(RI.price), 0)) / BU.budgetamount) * 100, 0) AS spent_budget FROM budget as BU
+        ROUND(((BU.budgetamount - COALESCE(SUM(RI.price), 0)) / BU.budgetamount) * 100, 0) AS spent_budget, enddate FROM budget as BU
         LEFT JOIN receipt AS RE ON BU.budgetID = RE.budgetID
         LEFT JOIN receiptitems AS RI ON RE.receiptID = RI.receiptID
         WHERE BU.usersID = ${userID}
@@ -80,11 +80,13 @@ router.put('/users/:id', async(req,res) => {
 
     let updateData = {};
 
-    // Only add fields that actually have values
-    if (username !== undefined && username !== "") updateData.username = username;
-    if (gmail !== undefined && gmail !== "") updateData.gmail = gmail;
+    if (username !== undefined && username !== ""){
+        updateData.username = username;
+    }
+    if (gmail !== undefined && gmail !== ""){
+        updateData.gmail = gmail;
+    }
 
-    // Now run your update
     await prisma.users.update({
         where: { usersID: parseInt(req.params.id) },
         data: updateData
