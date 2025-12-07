@@ -35,10 +35,10 @@
         router.push('/userdashboard')
       }
       else{
-        console.log("admin detected!");
-        console.log(data.permission);
+        router.push('/admin')
       }
-    } else {
+    } 
+    else {
       alert("You must log in first!")
     }
   }

@@ -76,7 +76,7 @@ router.get('/dashboardcheck/:id', async(req,res) => {
 //------------------------------
 
 router.put('/users/:id', async(req,res) => {
-    let { username, gmail } = req.body;
+    let { username, gmail, permission } = req.body;
 
     let updateData = {};
 
@@ -85,6 +85,9 @@ router.put('/users/:id', async(req,res) => {
     }
     if (gmail !== undefined && gmail !== ""){
         updateData.gmail = gmail;
+    }
+    if(permission !== undefined && permission !== ""){
+        updateData.permission = parseInt(permission);
     }
 
     await prisma.users.update({

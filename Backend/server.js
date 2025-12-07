@@ -13,6 +13,7 @@ const receiptitemsRouter = require("./routes/receiptitems");
 const metricsRouter = require("./routes/metrics");
 const dashboardRouter = require("./routes/dashboard");
 const recommendationsRouter = require("./routes/recommendations");
+const permavaluesRouter = require("./routes/permavalues");
 
 app.use("/users", usersRouter);
 app.use("/receipt", receiptRouter);
@@ -20,6 +21,7 @@ app.use("/receiptitems", receiptitemsRouter);
 app.use("/metrics", metricsRouter);
 app.use("/dashboard", dashboardRouter);
 app.use("/recommendations", recommendationsRouter);
+app.use("/permavalues", permavaluesRouter);
 
 app.use(express.json());
 

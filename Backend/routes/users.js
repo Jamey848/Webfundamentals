@@ -148,7 +148,7 @@ router.post('/changepass', async (req, res) => {
 
   // 5. Update DB
   await prisma.users.update({
-    where: { userID: parseInt(userID) },
+    where: { usersID: parseInt(userID) },
     data: { userpassword: hashedPassword }
   });
 

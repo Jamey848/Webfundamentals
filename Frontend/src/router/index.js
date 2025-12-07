@@ -9,6 +9,7 @@ import Productlist from "@/Pages/Productlist.vue";
 import Metrics from "@/pages/Metrics.vue";
 import Recommendations from "@/pages/Recommendations.vue";
 import Userdashboard from "@/pages/Userdashboard.vue";
+import Admin from "@/pages/Admin.vue";
 
 
 const routes = [
@@ -51,6 +52,11 @@ const routes = [
         path: '/userdashboard',
         name: 'userdashboard',
         component: Userdashboard
+    },
+    {
+        path: '/admin',
+        name: 'admin',
+        component: Admin
     }
 ];
 
