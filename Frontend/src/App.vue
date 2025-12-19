@@ -1,8 +1,17 @@
 <script setup>
   import { currentUserID } from "./sessiondata/sessionID"
   import { useRouter } from 'vue-router'
+  import{ ref, onMounted, provide } from "vue";
+  import { watch } from 'vue'
 
   const router = useRouter()
+
+  const currentusername = ref('');
+  const currentpermission = ref('');
+
+  function gotoHome(){
+    router.push('/');
+  }
 
   function gotoReceipts() {
     if (currentUserID.value) {
@@ -26,6 +35,7 @@
     }
   }
   async function gotoUserdashboard(){
+    console.log(currentUserID.value);
     if (currentUserID.value) {
       const permissioncheck = await fetch("http://localhost:3000/dashboard/permissioncheck/" + currentUserID.value);
 
@@ -42,52 +52,68 @@
       alert("You must log in first!")
     }
   }
+
+  watch(currentUserID, async (newVal, oldVal) => {
+    if (newVal != null) {
+      const permissioncheck = await fetch("http://localhost:3000/dashboard/permissioncheck/" + currentUserID.value);
+      const data = await permissioncheck.json();
+
+      if(data.permission == 1){
+        currentpermission.value = "Logged in as: ";
+        currentusername.value = `Shopper ${data.username}`;
+      }
+      else if(data.permission == 2){
+        currentpermission.value = "Logged in as: ";
+        currentusername.value = `Admin ${data.username}`;
+      }
+    }
+    else{
+      currentusername.value = "";
+      currentpermission.value = "";
+    }
+  })
+
 </script>
 
 <template>
   <div>
-    <nav>
-      <router-link to="/">Home</router-link>
-      <router-link to="/artists">Artists</router-link>
-      <!--<router-link to="/addreceipt">AddReceipt</router-link>-->
-      <router-link to="/receipts">Receipts</router-link>
-      <!--<button @click="gotoProductlist" to="/productlist">Productlist</button>-->
-      <button @click="gotoReceipts">Receipts</button>
-      <button @click="gotoMetrics">Metrics</button>
-      <button @click="gotoRecommendations">Recommendations</button>
-      <button @click="gotoUserdashboard">userdashboard</button>
+    <nav class="nav">
+      <div class="nav-left">
+        <button @click="gotoHome">Home</button>
+        <button @click="gotoReceipts">Receipts</button>
+        <button @click="gotoMetrics">Metrics</button>
+        <button @click="gotoRecommendations">Recommendations</button>
+        <button @click="gotoUserdashboard">Userdashboard</button>
+      </div>
+
+      <div class="nav-right">
+        <span>{{ currentpermission }}</span>
+        <span>{{ currentusername }}</span>
+      </div>
     </nav>
 
-    <!-- This renders your pages -->
     <router-view />
   </div>
 </template>
 
-<!--<style scoped>
-header {
-  line-height: 1.5;
+<style scoped>
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Put child items to left, last child item all the way to the right */
+  padding: 10px 20px;
+  border-bottom: 1px solid #ddd;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.nav-left button {
+  margin-right: 10px;
+  padding: 6px 12px;
+  background: none;
+  border: 1px solid #ccc;
+  cursor: pointer;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.nav-left button:hover {
+  background: #f0f0f0;
 }
-</style>-->
+</style>

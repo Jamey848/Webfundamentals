@@ -5,6 +5,9 @@
 <script setup>
     import { currentUserID } from "../sessiondata/sessionID"
     import{ ref, onMounted, provide } from "vue";
+    import { useRouter } from 'vue-router'
+
+    const router = useRouter();
 
     //import {VueApexCharts} from "vue3-apexcharts";
 
@@ -147,6 +150,10 @@
         );
     }
 
+    function goBack(){
+        router.go(-1);
+    }
+
 </script>
 
 <!--
@@ -154,6 +161,7 @@
 --->
 <template>
     <div class="page-layout">
+        <img src="@/assets/GoBack.png" style="width:40px; height:40px; margin-top:20px; margin-left:20px" @click="goBack()">
         <div class="receipt-textboxes">
             <h2>Enter new receipt</h2>
             <div class="receipt-textbox">
@@ -179,24 +187,29 @@
             <h2>Enter new receiptitem</h2>
             <div class="receipt-textbox">
                 <label>Productname</label>
+                <small>(Amount of the product you bought.)</small>
                 <input v-model="productname">
             </div>
             <div class="receipt-textbox">
                 <label>Price</label>
+                <small>(Use '.' as decimal indicator)</small>
                 <input v-model="price" style="width:70px">
             </div>
             <div class="receipt-textbox">
                 <label>Quantity</label>
+                <small>(Amount of 1 unit of the product. Example: 1l)</small>
                 <input v-model="quantity" style="width:70px">
             </div>
             <div class="receipt-textbox">
                 <label>Units</label>
+                <small>(Measurement unit of the product.)</small>
                 <select v-model="unit">
                     <option v-for="unit in unitlist" :key="unit.unitID" :value="unit.unitname"> {{ unit.unitname }}</option>
                 </select>
             </div>
             <div class="receipt-textbox">
                 <label>Amount</label>
+                <small>(Amount of the product you bought.)</small>
                 <input v-model="amount" style="width:70px">
             </div>
             <div class="receipt-textbox">
@@ -259,8 +272,6 @@
         background: white;
         width: 100%;
         box-sizing: border-box;
-
-        transition: border-color 0.2s, box-shadow 0.2s;
     }
 
     .receipt-textbox select{

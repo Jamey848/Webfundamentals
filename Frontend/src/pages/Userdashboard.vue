@@ -5,10 +5,13 @@
     // Imports
     import { onMounted, ref } from 'vue';
     import { currentUserID } from "../sessiondata/sessionID"
+    import { useRouter } from 'vue-router'
     import budgetwindow from "../components/Budget.vue"
     import addbudgetwindow from "../components/Addbudget.vue"
     import appenduserwindow from "../components/Appenduser.vue"
     import passchangewindow from "../components/Passchange.vue"
+
+    const router = useRouter()
 
     const totalamount = ref('');
     const budgets = ref([]);
@@ -29,8 +32,6 @@
         const dashboardinfo = await fetch("http://localhost:3000/dashboard/dashboardcheck/" + currentUserID.value);
         const data = await dashboardinfo.json();
 
-        console.log(data);
-
         totalamount.value = data.totalamount[0].TotalAmount; // already the value
         budgets.value = data.budgets;
         username.value = data.userinfo.username;
@@ -42,6 +43,12 @@
     onMounted(async () => {
         await loaddashboard();
     });
+
+    async function logout(){
+        currentUserID.value = null;
+        router.push("/");
+        alert("You have succesfully logged out");
+    }
 
     async function deleteBudget(budgetID){
         const deletedBudget = await fetch("http://localhost:3000/dashboard/budget/" + parseInt(budgetID), {
@@ -62,11 +69,18 @@
         console.log(enddate);
 
         if(end < today){
-            return '#e0e0e0';
+            return ['#e0e0e0', "Attention! This budget is overdue!"];
         }
-        if (percentage > 70) return '#d4edda';  // green-ish for high remaining
-        if (percentage > 30) return '#fff3cd';  // yellow-ish for medium remaining
-        return '#f8d7da';                        // red-ish for low remaining
+        if (percentage > 70){
+            return ['#d4edda', "Less then 30% of budget is in use."];  // green-ish for high remaining
+        } 
+        if (percentage > 30){
+            return ['#fff3cd', "More then 30% of budget is in use!"];  // yellow-ish for medium remaining
+        }
+        else{
+            return ['#f8d7da', "More receipts have been added then the budget can cover!"];                        // red-ish for low remaining
+        } 
+        
     }
 
     // OPEN SUBWINDOWS
@@ -118,8 +132,9 @@
                 <p v-if="totalamount">Your current total spend is: €{{ totalamount }}</p>
             </div>
             <h2>Your current budgets</h2>
-            <div @click="viewbudget(budget.budgetID)" v-for="budget in budgets" :key="budget.budgetID" class="budgets" :style="{ backgroundColor: getBudgetColor(parseInt(budget.spent_budget), budget.enddate) }">
+            <div @click="viewbudget(budget.budgetID)" v-for="budget in budgets" :key="budget.budgetID" class="budgets" :style="{ backgroundColor: getBudgetColor(parseInt(budget.spent_budget), budget.enddate)[0] }">
                 <p>Budget #{{ budget.budgetID }}.</p>
+                <p>{{getBudgetColor(parseInt(budget.spent_budget), budget.enddate)[1]}}</p>
                 <!--<p style="position:relative; right:100px" v-if="budget.startdate">Timeslot: {{ budget.startdate.slice(0, 10) }} | {{ budget.enddate.slice(0, 10) }}</p>-->
                 <img @click.stop="deleteBudget(budget.budgetID)" class="trash-icon" src="@/assets/trash.png" style="width:30px; height:30px">
             </div>
@@ -134,6 +149,7 @@
 
             <button @click="viewappenduser()">Change your account settings</button><br><br>
             <button @click="openpass()">Change your password</button>
+            <button @click="logout()">Log out of your account</button>
         </div>
     </div>
     <budgetwindow 

@@ -4,6 +4,7 @@
 <script setup>
     // ------------ Import
     import{ ref, onMounted, provide } from "vue"; // Automatic refresh of value.
+    import { currentUserID } from "../sessiondata/sessionID"
 
     const emit = defineEmits(['close', 'register']) // defineEmits = Vue3 API. Declare a function to be "emitted" (send) to the parent page. The parent page can listen to these functions.
 
@@ -47,8 +48,6 @@
             password.value = "";
 
             currentUserID.value = data[0].usersID;
-            localStorage.setItem('currentUserID', data[0].usersID)
-            console.log(currentUserID.value)
         }
     }
 </script>

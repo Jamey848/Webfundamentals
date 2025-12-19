@@ -120,6 +120,7 @@
             <div class="confirm-button">
                 <button @click="addItem(productname, price, quantity, unit, amount, category)">Confirm</button>
             </div>
+            <button class="return-btn" @click="close()">Return</button>
         </div>
     </div>
 </template>
@@ -127,13 +128,12 @@
 <style scoped>
 /* SUBWINDOW STYLE */
 .overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
+    display:flex;
+    position: absolute;
+    top: 25%;
+    left: 35%;
+    margin-top: -50px;
+    margin-left: -30px;
 }
 .window {
   background: white;

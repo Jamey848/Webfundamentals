@@ -7,6 +7,9 @@
     import { useRoute } from 'vue-router';
     import { currentUserID } from "../sessiondata/sessionID"
     import AdditemWindow from '../components/Addreceiptitem.vue';
+    import { useRouter } from 'vue-router'
+
+    const router = useRouter();
     //import AddbudgetWindow from '../components/Addbudget.vue';
 
     const showAdditem = ref(false); // Ref() = 
@@ -93,6 +96,10 @@
       ? data[0]?.budgetID
       : data?.budgetID;
     }
+
+    function goBack(){
+      router.go(-1);
+    }
 </script>
 
 <!--
@@ -100,6 +107,7 @@
 --->
 <template>
     <div class="page-layout">
+      <img src="@/assets/GoBack.png" style="width:40px; height:40px; margin-top:10px; margin-left:10px" @click="goBack()">
         <div class="header-row">
             <h1>Productlist</h1>
             <img @click="showAdditem = true" src="@/assets/Add.png" class="add-icon">
@@ -151,7 +159,6 @@
     align-items: center;   /* vertically center H1 and icon */
     gap: 12px;             /* space between H1 and icon */
     margin-bottom:20px;
-    margin-top:20px;
   }
 
   .header-row h1 {

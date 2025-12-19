@@ -6,12 +6,12 @@
     import { onMounted, ref } from 'vue';
     import { currentUserID } from "../sessiondata/sessionID"
 
-    const Wisdom = ref({});
+    const Wisdom = ref([]);
 
-    async function chattywisdow(){
+    async function geminiwisdom() {
         const chattyresponse = await fetch("http://localhost:3000/recommendations", {
             method: "POST",
-            headers:{
+            headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -21,14 +21,9 @@
 
         const data = await chattyresponse.json();
 
-        if(data.advice.Line1.includes("The model does not exist in our api at the moment.")){
-            alert("The ChatGPT API crashed. Please try again");
-        }
-        else{
-            Wisdom.value = Object.values(data.advice);
+        Wisdom.value = data;
 
-            console.log(data);
-        }
+        console.log(Wisdom.value);
     }
     
 </script>
@@ -40,17 +35,29 @@
     <div class="container">
         <header>
         <h1>Recommendations</h1>
-        <p>Get useful recommendations with the ChatGPT API!</p>
+        <p>Get useful recommendations with the Gemini API!</p>
         </header>
 
         <div class="content">
-            <button class="action-button" @click="chattywisdow">
-                Ask ChatGPT
+            <button class="action-button" @click="geminiwisdom()">
+                Ask Gemini
             </button>
 
             <div class="wisdom-container" v-if="Wisdom.length">
-                <h2>Advice:</h2>
-                <p v-for="(line, index) in Wisdom" :key="index" class="wisdom-line"> {{ line }}</p>
+                <div class="wisdom-line">
+                    <strong>{{ Wisdom[0].Titel }}:</strong>
+                    <p>{{ Wisdom[0].Recommendation }}</p>
+                </div>
+
+                <div class="wisdom-line">
+                    <strong>{{ Wisdom[1].Titel }}:</strong>
+                    <p>{{ Wisdom[1]["Price comparisons"] }}</p>
+                </div>
+
+                <div class="wisdom-line">
+                    <strong>{{ Wisdom[2].Titel }}:</strong>
+                    <p>{{ Wisdom[2]["Recommended change of shopping habits"] }}</p>
+                </div>
             </div>
         </div>
     </div>

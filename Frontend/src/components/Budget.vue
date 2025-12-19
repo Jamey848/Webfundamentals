@@ -70,6 +70,8 @@
 
     .budget {
         width: 500px;
+        max-height: 300px;
+        overflow-y:auto;
         background-color: #fff;
         border-radius: 15px;
         padding: 30px;
@@ -106,8 +108,6 @@
     .linked-receipts{
         background-color: #dedede;
         width:400px;
-        max-height: 200px;
-        overflow-y:auto;
         border-radius: 10%;
         margin:0 auto;
         margin-top:10px;

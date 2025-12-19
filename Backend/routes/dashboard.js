@@ -129,18 +129,25 @@ router.post('/budget', async(req, res) => {
 
     if(typeof budgetamount === "number")
     {
-        await prisma.budget.create({
+        if(budgetamount != "" && startdate != "" && enddate != ""){
+            await prisma.budget.create({
             data:{
                 usersID: usersID,
                 budgetamount: budgetamount,
                 startdate: new Date(startdate),
                 enddate: new Date(enddate)
             }
-        });
-
-        res.json({
-            "status": "succes"
-        })
+            });
+            
+            res.json({
+                "status": "succes"
+            })
+        }
+        else{
+            res.json({
+                "error": "Missing fields"
+            })
+        }
     }
     else
     {
@@ -164,6 +171,15 @@ router.get('/budget/:id', async(req, res) => {
 
 router.delete('/budget/:id', async(req, res) => {
     let budgetID = parseInt(req.params.id);
+
+    await prisma.receipt.updateMany({
+        where:{
+            budgetID: parseInt(budgetID)
+        },
+        data:{
+            budgetID: null
+        }
+    })
 
     if(!isNaN(budgetID))
     {

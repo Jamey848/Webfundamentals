@@ -91,7 +91,6 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.3); /* dim background */
         display: flex;
         justify-content: center;
         align-items: center;

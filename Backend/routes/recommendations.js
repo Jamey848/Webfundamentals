@@ -1,11 +1,13 @@
 // --------------------------------------------
 // Import Packages
 // --------------------------------------------
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
-const {PrismaClient} = require('../generated/prisma');
+import { PrismaClient } from '../generated/prisma/index.js';
 const prisma = new PrismaClient();
+
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 router.post('/', async(req, res) => {
     let usersID = req.body.usersID;
@@ -23,66 +25,50 @@ router.post('/', async(req, res) => {
     PR.productname,
     QUA;;`;
 
-    let wisdom = await gptwisdom(JSON.stringify(allUserData));
-    const cleanedText = wisdom.replace(/\*/g, '');
+    const wisdom = await geminiwisdow(JSON.stringify(allUserData));
 
-    // 2. Split by newlines and trim each line, removing empty ones
-    const lines = cleanedText
-    .split('\n')
-    .map(line => line.trim())
-    .filter(line => line);
+    res.json(wisdom);
     
-    const adviceJSON = {};
-    lines.forEach((line, index) => {
-        adviceJSON[`Line${index + 1}`] = line;
-    });
-
-    res.json({
-        "advice": adviceJSON
-    });
 })
 
-async function gptwisdom(userdata){
-    const url = 'https://chatgpt-42.p.rapidapi.com/conversationllama3';
-    const options = {
-        method: 'POST',
-        headers: {
-            'x-rapidapi-key': '520e0443e5msh665930f9c2e3c89p15a3cbjsnc0ddb1252286',
-            'x-rapidapi-host': 'chatgpt-42.p.rapidapi.com',
-            'Content-Type': 'application/json'
+async function geminiwisdow(userdata){
+    const apiKey = "AIzaSyASXLZtR_vEZTwlNbG4x7mJHaW1KulD_Z4";
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+
+    const model = genAI.getGenerativeModel({
+        model: "gemini-2.5-flash",
+        generationConfig: {
+            responseMimeType: "application/json"
+        }
+    });
+
+    const result = await model.generateContent(`
+        Return ONLY valid JSON.
+
+        Your answer will include the following structure:
+
+        {
+            "Titel": "Text",
+            "Recommendation": "Text" (Max 200 words)
         },
-        body: JSON.stringify({
-            messages: [
-                {
-                    role: 'user',
-                    content: `Given the data below, provide:
-                    Recommendations on spending habits (limit your response to 400 words)
+        {
+            "Titel": "Text",
+            "Price comparisons": "Text" (max 100 words)
+        },
+        {
+            "Titel": "Text",
+            "Recommended change of shopping habits": "Text" (max 100 words)
+        }
 
-                    (If you don't have enough data: be transparant about it and try your best)
-                    
-                    Do not use titles in your response.
-
-                    Data:
-                    ${userdata}`
-                }
-            ],
-            web_access: false
-        })
-    };
-
-    try {
-        const response = await fetch(url, options);
-        const resu = await response.json();
-
-        console.log(resu);
-
-        // Analysis: everything between "1. **Analysis**" and "2. **Recommendations**"
         
-        //console.log(recommended);
-        return resu.result;
-    } catch (error) {
-        console.error(error);
-    }
+
+        DATA:
+        ${userdata}`);
+    
+    const airesponse = JSON.parse(result.response.text());
+    return airesponse;
+    
 }
 
-module.exports = router;
+export default router;

@@ -1,20 +1,23 @@
-const express = require('express') // Import from node_modules
-const app = express() // Functie express(), dit toevoegen aan var app & later settings aan toevoegen.
-const cors = require('cors');
+import express from 'express';
+import cors from 'cors';
+
+// Import your routers using ESM syntax
+import usersRouter from './routes/users.js';
+import receiptRouter from './routes/receipt.js';
+import receiptitemsRouter from './routes/receiptitems.js';
+import metricsRouter from './routes/metrics.js';
+import dashboardRouter from './routes/dashboard.js';
+import recommendationsRouter from './routes/recommendations.js';
+import permavaluesRouter from './routes/permavalues.js';
+
+const app = express();
 
 app.use(cors());
-app.use(express.json())
+app.use(express.json());
 
 console.log("API is up and running, YIPEEE");
 
-const usersRouter = require("./routes/users");
-const receiptRouter = require("./routes/receipt");
-const receiptitemsRouter = require("./routes/receiptitems");
-const metricsRouter = require("./routes/metrics");
-const dashboardRouter = require("./routes/dashboard");
-const recommendationsRouter = require("./routes/recommendations");
-const permavaluesRouter = require("./routes/permavalues");
-
+// Use routers
 app.use("/users", usersRouter);
 app.use("/receipt", receiptRouter);
 app.use("/receiptitems", receiptitemsRouter);
@@ -23,6 +26,4 @@ app.use("/dashboard", dashboardRouter);
 app.use("/recommendations", recommendationsRouter);
 app.use("/permavalues", permavaluesRouter);
 
-app.use(express.json());
-
-app.listen(3000) // <|°_°|>
+app.listen(3000, () => console.log("Server running on port 3000"));
