@@ -31,7 +31,7 @@ Before you can start using the application, there are a couple of necessities th
 - Open a terminal in that folder.
 - Execute the following command: 
 ```bash
-git clone https://github.com/Jamey848/Webfundamentals
+git clone https://github.com/Jamey848/Webfundamentals.git
 ```
 
 ### Installing dependancies
@@ -58,10 +58,16 @@ npm install
 
 The ShopChap application uses a mysql database to store and querry data. It is therefore required to have a copy of the database structure whitin your own mysql workbench on your host machine.
 
-1. Open the "SC_Database.sql" file in the backend folder (open this in mysql).
-2. Execute the .sql file (click the lightning bolt at the top of the screen).
+1. Open a new tab in mysql workbench.
+2. Execute the following querry:
+```bash
+CREATE DATABASE shopchapdatabase
+```
+3. Refresh your schema's (click the 2 converting arrows), and then double click on "shopchapdatabase" so that it becomes bold.
+3. Go to "File" -> "Open SQL script" and select the ShopChap.sql file.
+4. Execute the querries (click the lightningbolt icon).
 
-You should be able to see a database has been created.
+You should be able to see your tables have been created after refreshing.
 
 ### Setting up your API key
 
@@ -78,7 +84,18 @@ Once you have your API key:
 - Open the `.env` file, you will see a parameter "API_KEY=".
 - After the "=", fill this in with your google gemini API key.
 
-### Running the application
+### Configuring Prisma
+
+Prisma is a usefull dependancy that makes CRUD operations much easier to execute.
+
+- Open the Backend folder in VS code (File -> Open folder).
+- Open a terminal in the VS code window (view -> Terminal)
+- Execute the following command:
+```bash
+npx prisma generate
+```
+
+### Accessing the application
 
 You're almost there! All that must be done is opening the folders in VS code and running them.
 

@@ -39,7 +39,7 @@
         const res = await fetch("http://localhost:3000/receiptitems/permanentValues");
         const data = await res.json();
 
-        console.log(data);
+        //console.log(data);
 
         categorylist.value = data.allcategories;
 

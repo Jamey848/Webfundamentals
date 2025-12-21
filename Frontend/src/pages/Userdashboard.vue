@@ -37,7 +37,7 @@
         username.value = data.userinfo.username;
         gmail.value = data.userinfo.gmail;
 
-        console.log(totalamount.value, budgets.value, username.value, gmail.value);
+        //console.log(totalamount.value, budgets.value, username.value, gmail.value);
     };
 
     onMounted(async () => {
@@ -66,7 +66,7 @@
         const today = new Date();
         const end = new Date(enddate);
 
-        console.log(enddate);
+        //console.log(enddate);
 
         if(end < today){
             return ['#e0e0e0', "Attention! This budget is overdue!"];

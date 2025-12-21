@@ -41,7 +41,7 @@
     }
   }
   async function gotoUserdashboard(){
-    console.log(currentUserID.value);
+    //console.log(currentUserID.value);
     if (currentUserID.value) {
       const permissioncheck = await fetch("http://localhost:3000/dashboard/permissioncheck/" + currentUserID.value);
 
@@ -69,14 +69,14 @@
 
     const data = await permissioncheck.json();
 
-    console.log("DATA: " + data);
+    //console.log("DATA: " + data);
 
     if(!data || Object.keys(data).length === 0){
-      console.log(data);
+      //console.log(data);
       return false;
     }
     else{
-      console.log(data);
+      //console.log(data);
       return true;
     }
   }

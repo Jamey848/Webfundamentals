@@ -31,10 +31,10 @@
     })
 
     async function item(){
-        console.log(prop.method);
+        /*console.log(prop.method);
         console.log(prop.itemID);
         console.log(itemname.value);
-        console.log(prop.itemtype);
+        console.log(prop.itemtype);*/
         const methoditem = await fetch("http://localhost:3000/permavalues", {
             method: prop.method,
             headers:{
@@ -56,7 +56,7 @@
             alert("Operation succesfull");
         }
         
-        console.log(data);
+        //console.log(data);
     }
 </script>
 

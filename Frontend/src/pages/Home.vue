@@ -18,16 +18,16 @@
         currentUserID.value = null;
         currentUserID.value = temp;
 
-        console.log(currentUserID.value);
+        //console.log(currentUserID.value);
     });
 
-    function RestID(){
+    /*function RestID(){
         currentUserID.value = null;
     }
 
     function reset(){
         currentUserID.value = 1;
-    }
+    }*/
 </script>
 
 <!--
@@ -54,13 +54,6 @@
                 Register
                 </button>
             </div>
-
-            <button class="ghost" @click="RestID()">
-                Delete stored ID
-            </button>
-            <button class="ghost" @click="reset()">
-                Reset User ID to 1
-            </button>
         </div>
 
         <RegisterWindow
@@ -137,11 +130,5 @@ button {
 .secondary {
     background: #eaeaea;
     color: #111111;
-}
-
-.ghost {
-    background: none;
-    color: #888888;
-    font-size: 13px;
 }
 </style>

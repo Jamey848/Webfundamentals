@@ -16,12 +16,6 @@
     const startdate = ref('');
     const enddate = ref('');
 
-    function checkitout(){
-        console.log(budgetamount.value);
-        console.log(startdate.value);
-        console.log(enddate.value);
-    }
-
     async function addBudget(){ 
         const insertBudget = await fetch("http://localhost:3000/dashboard/budget", {
             method: "POST",

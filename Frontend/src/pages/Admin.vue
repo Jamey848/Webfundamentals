@@ -31,7 +31,7 @@
         users.value = data;
         permavalues.value = permdata;
 
-        console.log(users.value);
+        //console.log(users.value);
     };
 
     onMounted(async () => {

@@ -24,8 +24,8 @@
         budget.value = budgetdata;
         receiptlinks.value = receiptdata;
 
-        console.log(budget.value);
-        console.log(receiptdata);
+        /*console.log(budget.value);
+        console.log(receiptdata);*/
     })
 
     function close(){

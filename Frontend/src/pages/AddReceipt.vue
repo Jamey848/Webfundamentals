@@ -77,7 +77,7 @@
             })
 
             const data = await insertReceipt.json();
-            console.log(data);
+            //console.log(data);
 
             if(data.error){
                 Rmessage.value = data.error;
@@ -98,7 +98,7 @@
         }
         else{
             RImessage.value = "";
-            console.log(insertedID.value, productname.value, parseFloat(price.value), unit.value, quantity.value, amount.value, category.value);
+            //console.log(insertedID.value, productname.value, parseFloat(price.value), unit.value, quantity.value, amount.value, category.value);
             const insertItem = await fetch("http://localhost:3000/receiptitems/" + insertedID.value, {
                 method: "POST",
                 headers:{
@@ -123,7 +123,7 @@
                 const displayString = `${productname.value} x ${quantity.value} | €${parseFloat(amount.value)}`;
                 itemList.value.push([displayString, data.receiptitemsID]);
 
-                console.log(data.receiptitemsID);
+                //console.log(data.receiptitemsID);
 
                 productname.value = "";
                 category.value = "";
@@ -139,7 +139,7 @@
         const delitem = await fetch("http://localhost:3000/receiptitems/" + itemID, {
             method: "DELETE"
         });
-        console.log(delitem.json());
+        //console.log(delitem.json());
 
         removeItemByID(itemID);
     }

@@ -29,7 +29,7 @@
       if (R_ID) {
         receiptID.value = parseInt(R_ID);
         getReceiptitems(R_ID);
-        console.log(receiptID.value);
+        //console.log(receiptID.value);
       } 
       else {
         console.warn('No receiptID in route params');
@@ -46,15 +46,15 @@
       const data = await allbudgets.json();
       const thisdata = await thisbudget.json();
 
-      console.log(thisdata);
+      //console.log(thisdata);
 
       budgets.value = data;
       allocatedbudget.value = Array.isArray(thisdata)
       ? thisdata[0]?.budgetID
       : thisdata?.budgetID;
 
-      console.log(budgets.value);
-      console.log(allocatedbudget.value);
+      //console.log(budgets.value);
+      //console.log(allocatedbudget.value);
     });
 
     function closeSubwindow(){
@@ -73,7 +73,7 @@
       const delitem = await fetch("http://localhost:3000/receiptitems/" + itemID, {
           method: "DELETE"
       });
-      console.log(delitem.json());
+      //console.log(delitem.json());
 
       getReceiptitems(receiptID.value);
     }

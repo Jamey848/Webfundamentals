@@ -54,7 +54,7 @@
           method: "DELETE"
       });
       const checkdelete = await deletedReceipt.json();
-      console.log(checkdelete);
+      //console.log(checkdelete);
 
       await receiptData();
     }
@@ -64,7 +64,7 @@
           method: "PUT"
       });
       const checkupdate = await updateReceipt.json();
-      console.log(checkupdate);
+      //console.log(checkupdate);
 
       await receiptData();
     }
@@ -90,7 +90,7 @@
       })
     }
 
-    console.log(currentUserID.value);
+    //console.log(currentUserID.value);
 </script>
 
 <!--
