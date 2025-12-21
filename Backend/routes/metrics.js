@@ -51,20 +51,27 @@ router.post('/graph', async(req, res) => {
   let TimeFilter = req.body.TimeFilter;
   let userID = req.body.userID;
 
-  let startdate = format(findstartdate(TimeFilter), "yyyy-MM-dd");
-  let enddate = format(new Date(), "yyyy-MM-dd");
+  if(TimeFilter == "" || CategoryName == ""){
+    res.json({
+      "error": "Missing parameters!"
+    })
+  }
+  else{
+    let startdate = format(findstartdate(TimeFilter), "yyyy-MM-dd");
+    let enddate = format(new Date(), "yyyy-MM-dd");
 
-  let graphdata = await prisma.$queryRaw`SELECT CA.categoryname, SUM(RI.amount) as Amountbought, SUM(RI.price) as Totalprice, RE.receiptdate FROM category as CA
-  INNER JOIN product as PR on CA.categoryID = PR.categoryID
-  INNER JOIN receiptitems as RI on RI.productID = PR.productID
-  INNER JOIN receipt as RE on RI.receiptID = RE.receiptID
-  WHERE RE.usersID = ${userID} 
-  AND CA.categoryname = ${CategoryName}
-  AND RE.receiptdate BETWEEN ${startdate} AND ${enddate}
-  GROUP BY CA.categoryname, RE.receiptdate
-  ORDER BY RE.receiptdate asc;`;
+    let graphdata = await prisma.$queryRaw`SELECT CA.categoryname, SUM(RI.amount) as Amountbought, SUM(RI.price) as Totalprice, RE.receiptdate FROM category as CA
+    INNER JOIN product as PR on CA.categoryID = PR.categoryID
+    INNER JOIN receiptitems as RI on RI.productID = PR.productID
+    INNER JOIN receipt as RE on RI.receiptID = RE.receiptID
+    WHERE RE.usersID = ${userID} 
+    AND CA.categoryname = ${CategoryName}
+    AND RE.receiptdate BETWEEN ${startdate} AND ${enddate}
+    GROUP BY CA.categoryname, RE.receiptdate
+    ORDER BY RE.receiptdate asc;`;
 
-  res.json(graphdata);
+    res.json(graphdata);
+  }
 })
 
 function findstartdate(dmy){

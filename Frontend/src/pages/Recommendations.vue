@@ -7,8 +7,10 @@
     import { currentUserID } from "../sessiondata/sessionID"
 
     const Wisdom = ref([]);
+    const isloading = ref(false);
 
     async function geminiwisdom() {
+        isloading.value = true;
         const chattyresponse = await fetch("http://localhost:3000/recommendations", {
             method: "POST",
             headers: {
@@ -23,7 +25,9 @@
 
         Wisdom.value = data;
 
-        console.log(Wisdom.value);
+        isloading.value = false;
+
+        //console.log(Wisdom.value);
     }
     
 </script>
@@ -39,9 +43,14 @@
         </header>
 
         <div class="content">
-            <button class="action-button" @click="geminiwisdom()">
-                Ask Gemini
-            </button>
+            <div v-if="!isloading">
+                <button class="action-button" @click="geminiwisdom()">
+                    Ask Gemini
+                </button>
+            </div>
+            <div v-else style="margin-top:40px">
+                <p style="font-size:20px">LOADING...</p>
+            </div>
 
             <div class="wisdom-container" v-if="Wisdom.length">
                 <div class="wisdom-line">
@@ -64,62 +73,62 @@
 </template>
 
 <style scoped>
-    .container {
-        width:900px;
-        margin: 2rem auto; /* Put div in the center */
-        padding: 40px;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #fdfdfd;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
+.container {
+    width: 900px;
+    margin: 20px auto; /* center horizontally with px */
+    padding: 40px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fdfdfd;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+}
 
-    header {
-        text-align: center;
-        margin-bottom: 2rem;
-    }
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
 
-    header h1 {
-        margin-bottom: 0.5rem;
-        color: #333;
-    }
+header h1 {
+    margin-bottom: 8px;
+    color: #333;
+}
 
-    header p {
-        color: #666;
-        font-size: 1.1rem;
-    }
+header p {
+    color: #666;
+    font-size: 18px;
+}
 
-    .content {
-        text-align: center;
-    }
+.content {
+    text-align: center;
+}
 
-    .action-button {
-        margin-bottom: 2rem;
-        padding:20px;
-        font-weight: bold;
-        color: #fff;
-        background: linear-gradient(#6b73ff, #000dff);
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-    }
+.action-button {
+    margin-bottom: 20px;
+    padding: 20px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #000dff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
 
-    .wisdom-container {
-        background-color: #f5f7ff;
-        border-radius: 10px;
-        text-align: left;
-    }
+.wisdom-container {
+    background-color: #f5f7ff;
+    border-radius: 10px;
+    padding: 15px;
+}
 
-    .wisdom-container h2 {
-        margin-bottom: 1rem;
-        color: #222;
-    }
+.wisdom-container h2 {
+    margin-bottom: 15px;
+    color: #222;
+}
 
-    .wisdom-line {
-        margin-bottom: 1em;
-        padding: 0.5rem;
-        background-color: #e4e9ff;
-        border-radius: 6px;
-        color: #333;
-    }
+.wisdom-line {
+    margin-bottom: 15px;
+    padding: 8px;
+    background-color: #e4e9ff;
+    border-radius: 6px;
+    color: #333;
+}
 </style>

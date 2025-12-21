@@ -74,13 +74,18 @@
 
         const data = await response.json();
 
-        // Fill reactive refs. .map function = loop through all items of json; take properties (and optionally convert them). Result = new array with only those specified items.
-        dates.value = data.map(item => new Date(item.receiptdate).toLocaleDateString()); // => To local datestring, again because javascript by default takes DateTime.
-        prices.value = data.map(item => parseFloat(item.Totalprice));
+        if(data.error){
+            alert(data.error);
+        }
+        else{
+            // Fill reactive refs. .map function = loop through all items of json; take properties (and optionally convert them). Result = new array with only those specified items.
+            dates.value = data.map(item => new Date(item.receiptdate).toLocaleDateString()); // => To local datestring, again because javascript by default takes DateTime.
+            prices.value = data.map(item => parseFloat(item.Totalprice));
 
-        // Update chartOptions and series dynamically
-        chartOptions.value.xaxis.categories = dates.value; // ASSIGN ARRAY OF DATESTRING TO XAXIS
-        series.value[0].data = prices.value; // ASSIGN ARRAY OF PRICES TO YAXIS
+            // Update chartOptions and series dynamically
+            chartOptions.value.xaxis.categories = dates.value; // ASSIGN ARRAY OF DATESTRING TO XAXIS
+            series.value[0].data = prices.value; // ASSIGN ARRAY OF PRICES TO YAXIS
+        }
     };
 </script>
 
@@ -149,113 +154,105 @@
 </template>
 
 <style scoped>
-    .page-layout {
-        display: flex;
-        gap: 30px;
-        padding: 20px;
-        width:100%;
-    }
+.page-layout {
+    display: flex;
+    gap:30px;
+}
 
-    .greater-graph-settings {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        padding: 15px;
-        background-color: #fafafa;
-        border: 1px solid #ddd;
-        border-radius: 12px;
-        width: 950px;
-    }
+.user-metrics {
+    width: 400px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    font-size: 18px;
+}
 
-    .graph-settings {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-    }
+.user-metrics h3 {
+    margin: 0 0 5px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 1px solid #eee;
+}
 
-    .graph-settings h3 {
-        font-size: 14px;
-        font-weight: 600;
-    }
+.user-metrics p {
+    margin: 5px 0;
+    color: #444;
+}
 
-    .graph-settings select {
-        font-size: 13px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        width: 200px;
-    }
+.category-ratios p {
+    font-size: 18px;
+    padding: 6px 10px;
+    background: #fafafa;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    width: 300px;
+    overflow: auto;
+}
 
-    .annoying-button{
-        display: flex;
-        justify-content: center;
-    }
+.category-ratios p:hover {
+    background: #f0f0f0;
+}
 
-    .annoying-button button {
-        padding: 8px 12px;
-        font-size: 14px;
-        border-radius: 6px;
-        border: 1px solid #121111;
-        background-color: #121111;
-        color: white;
-        cursor: pointer;
-        width: 535px;
-    }
+.greater-graph-settings {
+    width: 950px;
+    padding: 15px;
+    background-color: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
-    .greater-graph-settings button:hover {
-        background-color: #333;
-    }
+.graph-settings {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
 
-    /* Right graph panel */
-    .graph {
-        flex: 1;
-        width:900px;
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 12px;
-        border: 1px solid #ddd;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
+.graph-settings h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+}
 
-    .user-metrics {
-        font-size:18px;
-        width: 400px;
-        padding: 20px;
-        background: #fff;
-        border-radius: 12px;
-        border: 1px solid #ddd;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
+.graph-settings select {
+    font-size: 13px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 200px;
+}
 
-    .user-metrics h3 {
-        margin: 0;
-        font-size: 18px;
-        font-weight: 600;
-        color: #333;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 5px;
-    }
+.annoying-button {
+    display: flex;
+    justify-content: center;
+}
 
-    .user-metrics p {
-        margin: 5px 0;
-        color: #444;
-    }
+.annoying-button button {
+    width: 535px;
+    padding: 20px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #121111;
+    background-color: #121111;
+    color: #fff;
+    cursor: pointer;
+}
 
-    .category-ratios p {
-        font-size:18px;
-        display: flex;
-        padding: 6px 10px;
-        background: #fafafa;
-        border-radius: 8px;
-        margin-bottom: 6px;
-        width:300px;
-        overflow:auto;
-    }
+.annoying-button button:hover {
+    background-color: #333;
+}
 
-    .category-ratios p:hover {
-        background: #f0f0f0;
-    }
-
+.graph {
+    width: 900px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+}
 </style>

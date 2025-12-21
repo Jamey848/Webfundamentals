@@ -87,7 +87,6 @@
         background-color: #ffffff;
         border-radius: 12px;
         padding: 30px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         text-align: center;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         color: #333;
@@ -120,10 +119,6 @@
         outline: none;
     }
 
-    input:focus {
-        border-color: #007bff;
-    }
-
     .add-btn {
         margin-top: 10px;
         padding: 10px 15px;
@@ -133,11 +128,6 @@
         border: none;
         border-radius: 6px;
         cursor: pointer;
-        transition: background 0.3s;
-    }
-
-    .add-btn:hover {
-        background-color: #0056b3;
     }
 
     .return-btn {
@@ -148,9 +138,5 @@
         border: none;
         border-radius: 6px;
         cursor: pointer;
-    }
-
-    .return-btn:hover {
-        background-color: #e0e0e0;
     }
 </style>

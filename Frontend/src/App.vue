@@ -71,7 +71,7 @@
       currentusername.value = "";
       currentpermission.value = "";
     }
-  })
+  }, {immediate: true})
 
 </script>
 

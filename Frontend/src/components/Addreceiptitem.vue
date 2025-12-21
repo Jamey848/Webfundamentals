@@ -136,29 +136,29 @@
     margin-left: -30px;
 }
 .window {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 350px;
-  height: 350px;
-  position: relative;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 350px;
+    height: 350px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 
 .add-boxes {
-  display: flex;
-  flex-direction: column;
-  gap: 16px; /* spacing between form sections */
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* spacing between form sections */
 }
 
 .flex-row {
-  display: flex;
-  gap: 12px; /* spacing between quantity, units, amount */
+    display: flex;
+    gap: 12px; /* spacing between quantity, units, amount */
 }
 
 .flex-item {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .confirm-button{

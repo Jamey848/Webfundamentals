@@ -161,20 +161,10 @@
     margin-bottom:20px;
   }
 
-  .header-row h1 {
-    font-size: 1.8rem;
-    margin: 0;             /* remove default margin */
-  }
-
   .add-icon {
     width: 40px;
     height: 40px;
     cursor: pointer;
-    transition: transform 0.2s;
-  }
-
-  .add-icon:hover {
-    transform: scale(1.1); /* tiny hover effect */
   }
 
   .grid {
@@ -182,7 +172,6 @@
     grid-template-columns: 1fr 2fr 1fr 1fr 2fr 1fr; 
     max-height: 500px;          /* limits height so scrollbar appears if too many items */
     overflow-y: auto;            /* vertical scroll for many rows */
-    border-collapse: collapse;   /* optional: makes borders look tighter */
     background-color: #f9f9f9;  /* light background for the table */
     font-size: 16px;             /* larger, easier-to-read text */
     border-radius: 8px;          /* rounded corners for the whole grid */
@@ -201,7 +190,6 @@
     padding: 10px 8px;
     border-bottom: 1px solid #eee;
     text-align: center;
-    transition: background-color 0.2s;
   }
 
   .grid-header {
@@ -228,14 +216,6 @@
     transition: background-color 0.2s;
   }
 
-  .grid-items:nth-child(even) div {
-    background-color: #fcfcfc;
-  }
-
-  .grid-items div:hover {
-    background-color: #f1f1f1;
-  }
-
   .trash-icon {
     display: flex;
     justify-content: center;
@@ -249,40 +229,24 @@
     transition: transform 0.2s;
   }
 
-  .trash-icon img:hover {
-    transform: scale(1.2);
-  }
-
   .totalprice-card {
     background: #4CAF50;           
     color: white;                   
     padding: 6px 12px;             
     border-radius: 12px;            
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);  
     font-size: 30px;             
     font-weight: bold;
     text-align: center;             
     margin: 16px 0;                 
-    transition: transform 0.2s, box-shadow 0.2s;
   }
 
   .budget-info {
     background: #ffffff;
-    padding: 6px 12px;
     border-radius: 20px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  }
-
-  .budget-info p {
-    padding:3px;
-    font-weight: 600;
-    color: #333;
+    margin-left:20px;
   }
 
   .budget-info select {
-    padding: 4px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
     margin-right:10px;
   }
 
@@ -290,13 +254,8 @@
     background: #4CAF50;
     color: white;
     padding: 8px;
-    border: none;
     border-radius: 6px;
     cursor: pointer;
-  }
-
-  .budget-info button:hover {
-    background: #45a049;
   }
     
 </style>

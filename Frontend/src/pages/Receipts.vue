@@ -151,8 +151,8 @@
     </div>
     <div class="summary-box">
       <h2>Summary</h2>
-      <p v-if="shopcount">Amount of shoppingtrips: {{shopcount}}</p>
-      <p v-if="totalprice">Total amount spent: {{totalprice}}</p>
+      <p v-if="shopcount"># of shoppingtrips: {{shopcount}}</p>
+      <p v-if="totalprice">Total cost of receipts: {{totalprice}}</p>
       <p v-if="store">Most visited store: {{store}}</p>
     </div>
   </div>
@@ -185,7 +185,6 @@
   padding: 6px 4px;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
 .button-style{
@@ -209,7 +208,7 @@
 .receipt-container {
   max-height: 700px; /* Define max height + overflow-y => Now a scrollbar appears when nodes stretch the list beyond the predefined max-height */
   overflow-y: auto;
-  width: 700px;
+  width: 710px;
   margin: 20px auto;
   padding: 10px;
   font-family: Arial, sans-serif;
@@ -217,7 +216,6 @@
 }
 
 .filter-title {
-  text-transform: capitalize;
   color: #333;
   margin-bottom: 20px;
   border-bottom: 2px solid #ddd;
@@ -254,13 +252,9 @@
   padding: 12px 16px;
   border-radius: 8px;
   margin-bottom: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-}
-
-.receipt-card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  cursor:pointer;
+  border-style: solid;
+  border-color: black;
 }
 
 .receipt-name {

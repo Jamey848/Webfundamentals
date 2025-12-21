@@ -9,6 +9,9 @@ const prisma = new PrismaClient();
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+import dotenv from 'dotenv';
+dotenv.config(); 
+
 router.post('/', async(req, res) => {
     let usersID = req.body.usersID;
     let allUserData = await prisma.$queryRaw`SELECT RE.receiptname, RE.receiptdate, ST.storename, PR.productname, CONCAT(RI.amount, ' x ', RI.quantity, UN.unitname) as QUA, SUM(RI.price)
@@ -32,7 +35,7 @@ router.post('/', async(req, res) => {
 })
 
 async function geminiwisdow(userdata){
-    const apiKey = "AIzaSyASXLZtR_vEZTwlNbG4x7mJHaW1KulD_Z4";
+    const apiKey = process.env.API_KEY;
 
     const genAI = new GoogleGenerativeAI(apiKey);
 

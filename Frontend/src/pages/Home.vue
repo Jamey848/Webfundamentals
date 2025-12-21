@@ -13,6 +13,14 @@
 
     const showLogin = ref(false);
 
+    onMounted(async() => { 
+        const temp = currentUserID.value;
+        currentUserID.value = null;
+        currentUserID.value = temp;
+
+        console.log(currentUserID.value);
+    });
+
     function RestID(){
         currentUserID.value = null;
     }

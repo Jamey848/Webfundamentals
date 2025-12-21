@@ -186,7 +186,6 @@
         background-color: #fdfdfd;
         padding:40px;
         border-radius: 12px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         color: #333;
     }
@@ -207,7 +206,7 @@
     }
 
     .user-budgets .total-spent p {
-        font-size: 1.2rem;
+        font-size: 18px;
         font-weight: 600;
         color: #000dff;
     }
@@ -220,16 +219,16 @@
     .user-budgets .budgets {
         background-color: #f5f7ff;
         padding:20px;
-        margin-bottom: 1rem;
+        margin-bottom: 20px;
         border-radius: 8px;
         display: flex;
         justify-content: space-between;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        cursor:pointer;
     }
 
     .user-budgets .budgets p {
         margin: 0;
-        font-size: 1rem;
+        font-size: 16px;
         color: #333;
     }
 
@@ -274,19 +273,6 @@
         border: 5px solid #fff;
     }
 
-    .user-card p {
-        margin: 8px 0;
-        font-size: 1.1rem;
-        color: #333;
-        font-weight: 500;
-    }
-
-    .user-card p:first-of-type {
-        font-size: 1.3rem;
-        font-weight: 600;
-        color: #000dff;
-    }
-
     .user-card p:last-of-type {
         color: #555;
         font-size: 1rem;
@@ -294,9 +280,5 @@
 
     .trash-icon{
         cursor:pointer;
-    }
-
-    .trash-icon:hover{
-        transform: scale(1.02)
     }
 </style>

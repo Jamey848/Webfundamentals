@@ -15,8 +15,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-console.log("API is up and running, YIPEEE");
-
 // Use routers
 app.use("/users", usersRouter);
 app.use("/receipt", receiptRouter);

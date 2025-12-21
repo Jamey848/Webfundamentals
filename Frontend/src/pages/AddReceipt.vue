@@ -234,28 +234,29 @@
 </template>
 
 <style scoped>
-    .page-layout{
+    .page-layout {
         display: flex;
-        flex-direction: row;   /* <-- makes the TWO BIG DIVS side by side */
+        flex-direction: row;
         align-items: flex-start;
     }
+
     .receipt-textboxes {
         display: flex;
         flex-direction: column;
-        gap: 10px;                 /* space between textboxes */
-        width: 350px;              /* adjust to your layout */
+        gap: 10px;
+        width: 350px;
         padding: 20px;
         background: #fafafa;
         border-radius: 12px;
         border: 1px solid #e0e0e0;
-        margin-left:50px;
-        margin-top:40px;
+        margin-left: 50px;
+        margin-top: 40px;
     }
 
     .receipt-textbox {
         display: flex;
         flex-direction: column;
-        gap: 6px;                  /* space between label + input */
+        gap: 6px;
     }
 
     .receipt-textbox label {
@@ -274,7 +275,7 @@
         box-sizing: border-box;
     }
 
-    .receipt-textbox select{
+    .receipt-textbox select {
         padding: 12px 14px;
         font-size: 15px;
         border: 1px solid #ccc;
@@ -282,41 +283,37 @@
         background: white;
         width: 50%;
         box-sizing: border-box;
-
         transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    .confirm-button{
-        display:flex;
-        justify-content: flex-end; 
+    .confirm-button,
+    .confirm-button-plus {
+        display: flex;
+        justify-content: flex-end;
     }
 
-    .confirm-button-plus{
-        display:flex;
-        justify-content: flex-end; 
+    .confirm-button button,
+    .confirm-button-plus button {
+        background-color: #121111;
+        color: white;
+        border-radius: 5px;
+        padding: 8px 14px;
+        border: none;
+        cursor: pointer;
     }
 
-    .confirm-button-plus button{
+    .confirm-button-plus button {
         font-size: 30px;
-        background-color: rgb(18, 17, 17);
-        color:white;
-        border-radius: 5px;
-    }
-
-    .confirm-button button{
-        background-color: rgb(18, 17, 17);
-        color:white;
-        border-radius: 5px;
     }
 
     .grid-container {
         display: grid;
-        grid-template-columns: repeat(1fr); /* 2 columns of equal width */
-        gap: 10px; /* spacing between grid items */
+        grid-template-columns: 1fr; /* only one column */
+        gap: 10px;
         margin-top: 40px;
-        margin-left:150px;
+        margin-left: 150px;
         max-height: 650px;
-        overflow:auto;
+        overflow: auto;
     }
 
     .grid-item {
@@ -324,6 +321,7 @@
         padding: 12px;
         border-radius: 8px;
         text-align: center;
-        width:350px;
+        width: 350px;
     }
+
 </style>

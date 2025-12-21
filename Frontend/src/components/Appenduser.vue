@@ -63,23 +63,12 @@
 
 <style scoped>
     .page-layout {
-        display: flex;
-        position:absolute;
-        top: 35%;
-        left: 37%;
+        display:flex;
+        position: absolute;
+        top: 27%;
+        left: 43%;
         margin-top: -50px;
-        margin-left: -30px;
-        flex-direction: column; /* stack children vertically */
-        gap: 20px;              /* spacing between h3, form, and return button */
-        width: 400px;   
-        background-color: #ffffff;
-        border-radius: 10px;
-        box-shadow: #333;
-
-        justify-content: center;     /* vertical centering inside modal */
-        align-items: center;         /* horizontal centering inside modal */
-        gap: 20px; 
-        border:1px solid black;                  
+        margin-left: -30px;     
     }
     
     h3 {
@@ -90,6 +79,9 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
+        background-color: rgb(177, 177, 177);
+        padding:30px;
+        border-radius: 10%;
     }
 
     label {
