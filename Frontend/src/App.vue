@@ -13,25 +13,31 @@
     router.push('/');
   }
 
-  function gotoReceipts() {
-    if (currentUserID.value) {
+  async function gotoReceipts() {
+    const checkexistance = await userexists();
+
+    if (currentUserID.value && checkexistance) {
       router.push('/receipts')
     } else {
-      alert("You must log in first!")
+      alert("You must log in first or create a new account!")
     }
   }
-  function gotoMetrics() {
-    if (currentUserID.value) {
+  async function gotoMetrics() {
+    const checkexistance = await userexists();
+
+    if (currentUserID.value && checkexistance) {
       router.push('/metrics')
     } else {
-      alert("You must log in first!")
+      alert("You must log in first or create a new account!")
     }
   }
-  function gotoRecommendations() {
-    if (currentUserID.value) {
+  async function gotoRecommendations() {
+    const checkexistance = await userexists();
+
+    if (currentUserID.value && checkexistance) {
       router.push('/recommendations')
     } else {
-      alert("You must log in first!")
+      alert("You must log in first or create a new account")
     }
   }
   async function gotoUserdashboard(){
@@ -41,15 +47,37 @@
 
       const data = await permissioncheck.json();
 
-      if(data.permission == 1){
-        router.push('/userdashboard')
+      if(data != null){
+        if(data.permission == 1){
+          router.push('/userdashboard')
+        }
+        else{
+          router.push('/admin')
+        }
       }
       else{
-        router.push('/admin')
+        alert("You must first make an account!");
       }
     } 
     else {
       alert("You must log in first!")
+    }
+  }
+
+  async function userexists(){
+    const permissioncheck = await fetch("http://localhost:3000/dashboard/permissioncheck/" + currentUserID.value);
+
+    const data = await permissioncheck.json();
+
+    console.log("DATA: " + data);
+
+    if(!data || Object.keys(data).length === 0){
+      console.log(data);
+      return false;
+    }
+    else{
+      console.log(data);
+      return true;
     }
   }
 
@@ -58,13 +86,15 @@
       const permissioncheck = await fetch("http://localhost:3000/dashboard/permissioncheck/" + currentUserID.value);
       const data = await permissioncheck.json();
 
-      if(data.permission == 1){
-        currentpermission.value = "Logged in as: ";
-        currentusername.value = `Shopper ${data.username}`;
-      }
-      else if(data.permission == 2){
-        currentpermission.value = "Logged in as: ";
-        currentusername.value = `Admin ${data.username}`;
+      if(data != null){
+        if(data.permission == 1){
+          currentpermission.value = "Logged in as: ";
+          currentusername.value = `Shopper ${data.username}`;
+        }
+        else if(data.permission == 2){
+          currentpermission.value = "Logged in as: ";
+          currentusername.value = `Admin ${data.username}`;
+        }
       }
     }
     else{
